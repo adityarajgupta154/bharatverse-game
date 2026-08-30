@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "k-AR5zGs6XjKgTDcR61gb"
+uri = "file://artifacts/bharatverse/src/assets/images/village-sindhu.jpg"
+type = "image"
+title = "Sindhu Ghati — Village World Art (clean)"
+description = "Mohenjo-Daro village painting, baked UI removed — ready for the pannable world screen."
+logical_id = "1891d055-5d81-490d-a5ff-fa8ca1e3c70a"
+content_hash = "sha256:91d6b411507f46ae232a96680458e20ee5e0fc3b7f16a84de6ae5041add7a85a"
+size = 1059454
+mtime_ms = 1788088884176
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:3d151a30-ecb4-4d1f-9ceb-0b51c2f41a48/1891d055-5d81-490d-a5ff-fa8ca1e3c70a/c6fb38f2-7f1b-4296-ba53-9ec224ee402d"
+storage_version_token = "1788088918689259"
+content_type = "image/jpeg"
