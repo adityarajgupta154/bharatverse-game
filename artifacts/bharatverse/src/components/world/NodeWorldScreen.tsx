@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { STAGE_H } from '@/lib/stage';
@@ -17,13 +17,15 @@ import { BuildingCard } from './BuildingCard';
 import { NpcLayer } from './NpcLayer';
 
 /**
- * Inner node world (Village layer): the node's reference painting rendered
- * 1:1 in stage px as a vertically pannable canvas, with the Hub's pinned HUD
- * (info panel, Smriti, legend, filter/rift) reused on top. Buildings are
- * config-driven invisible hotspots that scroll with the art.
+ * NodeWorldScreen (PRD Task 8): the GENERIC inner-world template. Takes a
+ * `nodeId` prop and renders that node's world entirely from the registry —
+ * the reference painting 1:1 in stage px as a vertically pannable canvas,
+ * the Hub's pinned HUD (info panel, Smriti, legend, filter/rift) on top,
+ * and config-driven building/NPC hotspots that scroll with the art.
+ * No node-specific logic belongs here: standing up a new node's village is
+ * config + art only (see game/worlds/index.ts for the how-to).
  */
-export default function WorldStage() {
-  const { nodeId } = useParams<{ nodeId: string }>();
+export function NodeWorldScreen({ nodeId }: { nodeId: string }) {
   const [, setLocation] = useLocation();
   const { state, selectNode, markBuildingComplete, restoreNode } = useGame();
   const reducedMotion = useReducedMotion();
