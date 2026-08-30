@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
+import { STAGE_W, STAGE_H } from '@/lib/stage';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 /**
@@ -57,7 +58,7 @@ export function useRiftNavigate() {
       navigate(to);
       return;
     }
-    setLeavingFrom(origin ?? { x: 512, y: 296 });
+    setLeavingFrom(origin ?? { x: STAGE_W / 2, y: STAGE_H / 2 });
     timerRef.current = window.setTimeout(() => {
       // Free the guard so a future same-screen transition can run, and set
       // the handshake only when the navigation actually happens — scoped to
@@ -94,7 +95,7 @@ export function RiftVeil({
     return () => window.clearTimeout(t);
   }, [mode]);
   if (gone) return null;
-  const o = origin ?? { x: 512, y: 296 };
+  const o = origin ?? { x: STAGE_W / 2, y: STAGE_H / 2 };
   // Portal into <body>: escapes every in-app stacking context (the scaled
   // stage wrapper, TopNav, panels), so `out` reliably covers and
   // click-blocks the ENTIRE screen during the outgoing window. The origin
@@ -108,7 +109,7 @@ export function RiftVeil({
         mode === 'out' ? 'animate-rift-out pointer-events-auto' : 'animate-rift-in pointer-events-none'
       )}
       style={{
-        background: `radial-gradient(circle at ${(o.x / 1024) * 100}% ${(o.y / 592) * 100}%, rgba(124,77,214,0.55) 0%, rgba(24,12,40,0.94) 46%, rgba(5,3,10,0.985) 100%)`,
+        background: `radial-gradient(circle at ${(o.x / STAGE_W) * 100}% ${(o.y / STAGE_H) * 100}%, rgba(124,77,214,0.55) 0%, rgba(24,12,40,0.94) 46%, rgba(5,3,10,0.985) 100%)`,
       }}
     />,
     document.body

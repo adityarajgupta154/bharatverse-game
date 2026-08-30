@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { cn } from '@/lib/utils';
+import { STAGE_W } from '@/lib/stage';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import type { WorldNpc } from '@/game/world-types';
 import { DialogueBubble } from './DialogueBubble';
@@ -8,7 +9,7 @@ import { DialogueBubble } from './DialogueBubble';
 const DEFAULT_HOTSPOT = { w: 70, h: 110 };
 /** Bubble half-width + margin used to keep bubbles inside the 1024px canvas. */
 const BUBBLE_CLAMP = 96;
-const CANVAS_W = 1024;
+const CANVAS_W = STAGE_W; // world art is authored at stage width
 /**
  * If the speaker's head is closer than this to the top of the current view,
  * an above-head bubble would sit under the pinned TopNav (stage rows 0–72) —

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { STAGE_H } from '@/lib/stage';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useGame } from '@/game/store';
 import { RiftVeil, useRiftNavigate, consumeRiftFlag } from './RiftTransition';
@@ -14,8 +15,6 @@ import { RightControls } from '@/components/hub/RightControls';
 import { NodeBuilding } from './NodeBuilding';
 import { BuildingCard } from './BuildingCard';
 import { NpcLayer } from './NpcLayer';
-
-const STAGE_H = 592;
 
 /**
  * Inner node world (Village layer): the node's reference painting rendered

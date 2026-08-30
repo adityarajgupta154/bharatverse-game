@@ -1,4 +1,5 @@
 import { useEffect, useState, ReactNode } from 'react';
+import { STAGE_W, STAGE_H } from '@/lib/stage';
 import { TopNav } from './TopNav';
 import { ScreenFrame } from './ScreenFrame';
 
@@ -12,8 +13,8 @@ import { ScreenFrame } from './ScreenFrame';
 const STRETCH_CAP = 1.04;
 
 function computeScale() {
-  const rawX = window.innerWidth / 1024;
-  const rawY = window.innerHeight / 592;
+  const rawX = window.innerWidth / STAGE_W;
+  const rawY = window.innerHeight / STAGE_H;
   const s = Math.min(rawX, rawY);
   return {
     x: Math.min(rawX, s * STRETCH_CAP),
@@ -38,8 +39,8 @@ export function StageLayout({ children }: { children: ReactNode }) {
       <div
         className="relative bg-black"
         style={{
-          width: '1024px',
-          height: '592px',
+          width: `${STAGE_W}px`,
+          height: `${STAGE_H}px`,
           transform: `scale(${scale.x}, ${scale.y})`,
           transformOrigin: 'center center'
         }}
