@@ -42,7 +42,7 @@ An Indian heritage exploration game for school students: players travel a painte
 
 - Memory Map Hub (`/`): 5 era-gates with states (explored / in progress / locked), left info panel with restoration ring, Smriti dialogue box, legend, Filter + Time Rift buttons.
 - Stub routes styled but placeholder: `/journal /passport /companions /heritage /settings /oracle /chapter/:nodeId`.
-- Phase 2 (not built yet): inner "Village World" layer per Story/NPC PRD v4.1 (buildings.json, NPCs, climax gate).
+- Phase 2 (COMPLETE, Tasks 0–9): inner "Village World" layer per Story/NPC PRD v4.1. Generic template: `src/components/world/NodeWorldScreen.tsx` (takes nodeId; route `/world/:nodeId`); per-node data in `src/game/worlds/<node-id>/{buildings,npcs}.json` + registry entry in `src/game/worlds/index.ts` (has a "how to add a new node world" guide + dev-time config validator). Climax building completion fires the hub region-restore. Dev helpers: `?debug` (hotspot outlines + dev-complete) and `?at=<worldY>`.
 
 ## User preferences
 

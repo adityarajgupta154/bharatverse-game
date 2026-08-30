@@ -53,7 +53,9 @@ function defineWorld(entry: WorldEntry): WorldEntry {
     buildingIds.add(b.id);
     if (!/^(explore|minigame|builder|climax|recap):/.test(b.routeTarget))
       problems.push(`building "${b.id}" routeTarget "${b.routeTarget}" has an unknown namespace`);
-    if (b.position.x < 0 || b.position.x > STAGE_W || b.position.y < 0 || b.position.y > config.imageSize.h)
+    if (!Number.isFinite(b.position.x) || !Number.isFinite(b.position.y))
+      problems.push(`building "${b.id}" position must be finite numbers`);
+    else if (b.position.x < 0 || b.position.x > STAGE_W || b.position.y < 0 || b.position.y > config.imageSize.h)
       problems.push(`building "${b.id}" position is outside the painting`);
   }
   for (const b of config.buildings) {
@@ -73,7 +75,9 @@ function defineWorld(entry: WorldEntry): WorldEntry {
     if (n.dialogueLines.length === 0) problems.push(`npc "${n.id}" has no dialogue lines`);
     if (n.linkedBuildingId && !buildingIds.has(n.linkedBuildingId))
       problems.push(`npc "${n.id}" links unknown building "${n.linkedBuildingId}"`);
-    if (n.position.x < 0 || n.position.x > STAGE_W || n.position.y < 0 || n.position.y > config.imageSize.h)
+    if (!Number.isFinite(n.position.x) || !Number.isFinite(n.position.y))
+      problems.push(`npc "${n.id}" position must be finite numbers`);
+    else if (n.position.x < 0 || n.position.x > STAGE_W || n.position.y < 0 || n.position.y > config.imageSize.h)
       problems.push(`npc "${n.id}" position is outside the painting`);
   }
 

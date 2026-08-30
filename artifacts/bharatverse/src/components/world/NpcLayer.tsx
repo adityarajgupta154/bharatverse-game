@@ -78,10 +78,13 @@ function NpcHotspot({
       setAmbientOpen(true);
       closeId = window.setTimeout(() => setAmbientOpen(false), AMBIENT_OPEN_MS);
     };
+    // First speak is chained (stagger exceeds the bubble's open duration) so
+    // the entry moment murmurs one voice at a time instead of a 3-bubble
+    // chorus over the painting; steady-state periods then drift apart.
     const firstId = window.setTimeout(() => {
       speak();
       intervalId = window.setInterval(speak, periodMs);
-    }, 1500 + index * 1700);
+    }, 2600 + index * (AMBIENT_OPEN_MS + 800));
     return () => {
       window.clearTimeout(firstId);
       if (intervalId !== undefined) window.clearInterval(intervalId);
