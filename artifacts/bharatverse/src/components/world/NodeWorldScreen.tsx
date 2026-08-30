@@ -7,6 +7,7 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useGame } from '@/game/store';
 import { RiftVeil, useRiftNavigate, consumeRiftFlag } from './RiftTransition';
 import { getWorld, deriveBuildingState, initiallyCompleted } from '@/game/worlds';
+import { getGameForRouteTarget } from '@/game/games';
 import type { WorldBuilding, BuildingState } from '@/game/world-types';
 import { InfoPanel } from '@/components/hub/InfoPanel';
 import { SmritiDialogue } from '@/components/hub/SmritiDialogue';
@@ -102,6 +103,10 @@ export function NodeWorldScreen({ nodeId }: { nodeId: string }) {
         .filter(id => !completed.has(id))
         .map(id => world.config.buildings.find(x => x.id === id)?.name ?? id)
     : [];
+
+  // Playable 2D game behind this building (Minigames Phase Task 0)?
+  const activeGame =
+    active && active.s !== 'locked' ? getGameForRouteTarget(active.b.routeTarget) : null;
 
   return (
     <div className="absolute inset-0 pointer-events-none z-0">
@@ -233,6 +238,11 @@ export function NodeWorldScreen({ nodeId }: { nodeId: string }) {
           state={active.s}
           pendingNames={pendingNames}
           debug={debug}
+          onPlay={
+            activeGame
+              ? () => setLocation(`/world/${world.config.nodeId}/game/${activeGame.id}`)
+              : undefined
+          }
           onDevComplete={() => {
             markBuildingComplete(world.config.nodeId, active.b.id);
             // Completing the node's climax building IS node completion —

@@ -23,6 +23,7 @@ import Settings from '@/pages/Settings';
 import Oracle from '@/pages/Oracle';
 import Chapter from '@/pages/Chapter';
 import { NodeWorldScreen } from '@/components/world/NodeWorldScreen';
+import { GameScreen } from '@/components/game/GameScreen';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,17 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/oracle" component={Oracle} />
           <Route path="/chapter/:nodeId" component={Chapter} />
+          <Route path="/world/:nodeId/game/:gameId">
+            {params => (
+              // Key = route identity: params-only navigation must remount the
+              // host (fresh scene/phase/input), never reuse a stale instance.
+              <GameScreen
+                key={`${params.nodeId}:${params.gameId}`}
+                nodeId={params.nodeId}
+                gameId={params.gameId}
+              />
+            )}
+          </Route>
           <Route path="/world/:nodeId">
             {params => <NodeWorldScreen nodeId={params.nodeId} />}
           </Route>

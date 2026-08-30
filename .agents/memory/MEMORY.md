@@ -7,3 +7,4 @@
 - [Scaled-stage overlays](scaled-stage-overlays.md) — transform:scale stage wrapper traps z-index; full-screen veils must portal to document.body (fixed, z-100, viewport-% origin).
 - [E2E overlay click-block testing](e2e-overlay-testing.md) — element click() auto-retries past overlays; polling delays raw clicks via CDP queue; assert elementFromPoint instead.
 - [GitHub push flow](github-push-flow.md) — origin=adityarajgupta154/bharatverse-game (private, canonical); PAT via per-invocation cred helper; old `bharatverse` repo = pre-rollback archive, never merge/port.
+- [2D minigame framework lessons](minigame-framework-lessons.md) — key routed game hosts by route params (router reuses instances); mirror gameplay state into DOM HUD text so canvas games are e2e-assertable.

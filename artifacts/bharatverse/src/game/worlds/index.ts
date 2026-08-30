@@ -5,6 +5,7 @@ import type {
   WorldNpc,
 } from '@/game/world-types';
 import { STAGE_W, STAGE_H } from '@/lib/stage';
+import { getGameForRouteTarget } from '@/game/games';
 import sindhuBuildings from './sindhu-ghati/buildings.json';
 import sindhuNpcs from './sindhu-ghati/npcs.json';
 import sindhuArt from '@/assets/images/village-sindhu.jpg';
@@ -53,6 +54,13 @@ function defineWorld(entry: WorldEntry): WorldEntry {
     buildingIds.add(b.id);
     if (!/^(explore|minigame|builder|climax|recap):/.test(b.routeTarget))
       problems.push(`building "${b.id}" routeTarget "${b.routeTarget}" has an unknown namespace`);
+    // A registered 2D game must declare THIS building as its completion
+    // target — otherwise winning would mark the wrong building complete.
+    const game = getGameForRouteTarget(b.routeTarget);
+    if (game && game.buildingId !== b.id)
+      problems.push(
+        `building "${b.id}" routeTarget "${b.routeTarget}" launches game "${game.id}", but that game declares buildingId "${game.buildingId}" — they must match`
+      );
     if (!Number.isFinite(b.position.x) || !Number.isFinite(b.position.y))
       problems.push(`building "${b.id}" position must be finite numbers`);
     else if (b.position.x < 0 || b.position.x > STAGE_W || b.position.y < 0 || b.position.y > config.imageSize.h)

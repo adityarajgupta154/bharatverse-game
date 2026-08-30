@@ -2,6 +2,12 @@ import { useEffect, useRef } from 'react';
 import { X, Lock } from 'lucide-react';
 import type { WorldBuilding, BuildingState, BuildingType } from '@/game/world-types';
 
+/** Invitation copy once a building's game is actually playable. */
+const PLAY_LINES: Partial<Record<BuildingType, string>> = {
+  minigame: 'Naali tooti hai aur baarish sar par — paani ko raasta doge?',
+  builder: 'Nadi kinare naya mohalla basana hai — monsoon se pehle!',
+};
+
 const TYPE_META: Record<BuildingType, { label: string; line: string }> = {
   explore: {
     label: 'Khoj Sthal',
@@ -36,6 +42,7 @@ export function BuildingCard({
   pendingNames,
   debug,
   onDevComplete,
+  onPlay,
   onClose,
 }: {
   building: WorldBuilding;
@@ -45,6 +52,8 @@ export function BuildingCard({
   /** Dev-only (?debug): expose a mark-complete action for gating tests. */
   debug?: boolean;
   onDevComplete?: () => void;
+  /** Launches the building's registered 2D game (minigame/builder types). */
+  onPlay?: () => void;
   onClose: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -148,10 +157,28 @@ export function BuildingCard({
           </>
         ) : (
           <>
-            <p className="text-[8px] leading-[1.6] text-foreground/90 px-[6px]">{meta.line}</p>
-            <span className="inline-block mt-[10px] text-[6.5px] uppercase tracking-[0.14em] text-primary border border-primary/40 rounded-full px-[8px] py-[3px]">
-              {state === 'explored' ? '✓ Yaad laut chuki hai' : 'Jald aa raha hai'}
-            </span>
+            <p className="text-[8px] leading-[1.6] text-foreground/90 px-[6px]">
+              {onPlay ? PLAY_LINES[building.type] ?? meta.line : meta.line}
+            </p>
+            {onPlay ? (
+              <>
+                {state === 'explored' && (
+                  <span className="block mx-auto w-fit mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-primary/70 border border-primary/25 rounded-full px-[8px] py-[3px]">
+                    ✓ Yaad laut chuki hai
+                  </span>
+                )}
+                <button
+                  onClick={onPlay}
+                  className="block mx-auto mt-[10px] text-[8.5px] uppercase tracking-[0.16em] font-bold text-black bg-primary hover:bg-primary/85 rounded-full px-[16px] py-[6px] transition-colors"
+                >
+                  ▶ {state === 'explored' ? 'Phir Se Khelo' : 'Khel Shuru Karo'}
+                </button>
+              </>
+            ) : (
+              <span className="inline-block mt-[10px] text-[6.5px] uppercase tracking-[0.14em] text-primary border border-primary/40 rounded-full px-[8px] py-[3px]">
+                {state === 'explored' ? '✓ Yaad laut chuki hai' : 'Jald aa raha hai'}
+              </span>
+            )}
             {debug && state !== 'explored' && onDevComplete && (
               <button
                 onClick={onDevComplete}
