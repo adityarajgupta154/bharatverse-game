@@ -169,3 +169,49 @@
   background: rgba(212, 175, 55, 0.3);
   border-radius: 9999px;
 }
+
+/* Hub ↔ Village World rift transitions + restored-gate pulse (PRD Task 6).
+   The veils are also JS-gated on prefers-reduced-motion; the media query
+   below is belt-and-braces so a stray veil can never stick dark. */
+@keyframes rift-out {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rift-in {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes world-enter {
+  from { opacity: 0; transform: scale(1.035); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes restored-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.95; }
+}
+.animate-rift-out {
+  animation: rift-out 420ms ease-out forwards;
+}
+.animate-rift-in {
+  animation: rift-in 520ms ease-in forwards;
+}
+.animate-world-enter {
+  animation: world-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-restored-pulse {
+  animation: restored-pulse 2.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-rift-out,
+  .animate-world-enter {
+    animation: none;
+  }
+  .animate-rift-in {
+    animation: none;
+    opacity: 0;
+  }
+  .animate-restored-pulse {
+    animation: none;
+    opacity: 0.8;
+  }
+}

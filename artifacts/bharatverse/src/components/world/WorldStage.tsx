@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useGame } from '@/game/store';
+import { RiftVeil, useRiftNavigate, consumeRiftFlag } from './RiftTransition';
 import { getWorld, deriveBuildingState, initiallyCompleted } from '@/game/worlds';
 import type { WorldBuilding, BuildingState } from '@/game/world-types';
 import { InfoPanel } from '@/components/hub/InfoPanel';
@@ -23,7 +26,11 @@ const STAGE_H = 592;
 export default function WorldStage() {
   const { nodeId } = useParams<{ nodeId: string }>();
   const [, setLocation] = useLocation();
-  const { state, selectNode, markBuildingComplete } = useGame();
+  const { state, selectNode, markBuildingComplete, restoreNode } = useGame();
+  const reducedMotion = useReducedMotion();
+  const { leavingFrom, go } = useRiftNavigate();
+  // Clear our handshake flag (we always play our own entry reveal below).
+  useState(() => consumeRiftFlag(`/world/${nodeId}`));
   const world = getWorld(nodeId);
   // Entry gate: the world must exist AND its map node must be unlocked —
   // mirrors Chapter.tsx so a direct URL can't bypass progression.
@@ -102,7 +109,10 @@ export default function WorldStage() {
         ref={containerRef}
         tabIndex={0}
         aria-label="Village — scroll ya drag karke ghoomo"
-        className="absolute inset-0 overflow-hidden pointer-events-auto select-none touch-none cursor-grab active:cursor-grabbing focus:outline-none"
+        className={cn(
+          'absolute inset-0 overflow-hidden pointer-events-auto select-none touch-none cursor-grab active:cursor-grabbing focus:outline-none',
+          !reducedMotion && 'animate-world-enter'
+        )}
         onWheel={e => {
           // Wheel deltas arrive in CSS px (or lines); convert to world px so
           // pan speed matches drag at every viewport scale.
@@ -208,7 +218,7 @@ export default function WorldStage() {
         <LegendBar />
         <RightControls />
         <button
-          onClick={() => setLocation('/')}
+          onClick={() => go('/', { x: 98, y: 492 })}
           className="absolute left-[20px] top-[482px] w-[156px] h-[20px] rounded-full border border-primary/70 bg-black/60 hover:bg-primary/20 text-primary text-[8px] uppercase tracking-widest font-bold flex items-center justify-center gap-[4px] transition-colors z-40"
         >
           <ArrowLeft className="w-[10px] h-[10px]" />
@@ -224,6 +234,10 @@ export default function WorldStage() {
           debug={debug}
           onDevComplete={() => {
             markBuildingComplete(world.config.nodeId, active.b.id);
+            // Completing the node's climax building IS node completion —
+            // fire the Hub's region-restore event (PRD 6.3). Config-driven:
+            // works for any node whose buildings.json has a climax entry.
+            if (active.b.type === 'climax') restoreNode(world.config.nodeId);
             setActive(null);
             setSmritiLine(lines.welcome);
           }}
@@ -233,6 +247,10 @@ export default function WorldStage() {
           }}
         />
       )}
+
+      {/* Rift transition veils: reveal on entry, darken toward the rift on exit. */}
+      {!reducedMotion && !leavingFrom && <RiftVeil mode="in" />}
+      {leavingFrom && <RiftVeil mode="out" origin={leavingFrom} />}
     </div>
   );
 }

@@ -153,6 +153,12 @@ interface GameContextType {
   toggleFilter: (status: NodeStatus) => void;
   /** Idempotent: records a world-layer building as completed by the player. */
   markBuildingComplete: (nodeId: string, buildingId: string) => void;
+  /**
+   * Region-restore event (PRD 6.3): fired when a node's climax building is
+   * completed. Marks the map node fully restored — the Hub renders its
+   * restored treatment and the info panel shows 100%.
+   */
+  restoreNode: (nodeId: string) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -193,6 +199,17 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const restoreNode = (id: string) => {
+    setState(s => ({
+      ...s,
+      nodes: s.nodes.map(n =>
+        n.id === id
+          ? { ...n, status: 'explored' as NodeStatus, restorationPercent: 100, memoriesFound: n.memoriesTotal }
+          : n
+      ),
+    }));
+  };
+
   const toggleFilter = (status: NodeStatus) => {
     setState(s => {
       const isCurrentlyActive = s.activeFilters.includes(status);
@@ -208,7 +225,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <GameContext.Provider value={{ state, selectNode, updateNodeStatus, toggleFilter, markBuildingComplete }}>
+    <GameContext.Provider value={{ state, selectNode, updateNodeStatus, toggleFilter, markBuildingComplete, restoreNode }}>
       {children}
     </GameContext.Provider>
   );

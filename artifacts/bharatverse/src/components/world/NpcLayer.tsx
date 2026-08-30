@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { cn } from '@/lib/utils';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import type { WorldNpc } from '@/game/world-types';
 import { DialogueBubble } from './DialogueBubble';
 
@@ -18,19 +19,6 @@ const FLIP_THRESHOLD = 136;
 const PIN_MS = 4500;
 /** How long an ambient NPC's self-spoken bubble stays up. */
 const AMBIENT_OPEN_MS = 3800;
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(
-    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-  return reduced;
-}
 
 /**
  * Generic NPC hotspot (PRD §A.4.4 static fallback, locked in Task 0):
@@ -193,7 +181,7 @@ export function NpcLayer({
   suppressRef: MutableRefObject<{ moved: boolean }>;
   scrollY: number;
 }) {
-  const reducedMotion = usePrefersReducedMotion();
+  const reducedMotion = useReducedMotion();
   return (
     <>
       {npcs.map((npc, i) => (
