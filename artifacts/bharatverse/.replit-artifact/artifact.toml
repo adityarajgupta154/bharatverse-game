@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "BharatVerse"
+description = "BharatVerse — Restore the Lost Memories: an interactive heritage exploration game for students. Players guide Aru across a painted isometric Memory Map of Indian civilizations, restore lost memories by exploring era-gates (Indus Valley, Magadha and more), and later zoom into living village worlds with NPCs, puzzles and story missions."
+version = "1.0.0"
+id = "artifacts/bharatverse"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18165
+
+[services.development]
+run = "pnpm --filter @workspace/bharatverse run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bharatverse", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bharatverse/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18165"
+BASE_PATH = "/"

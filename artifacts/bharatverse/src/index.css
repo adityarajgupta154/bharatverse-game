@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Rozha+One&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 30 20% 5%;
+  --foreground: 40 20% 90%;
+  
+  --border: 30 25% 20%;
+  
+  --card: 30 15% 10%;
+  --card-foreground: 40 20% 90%;
+  --card-border: 35 30% 25%;
+  
+  --popover: 30 15% 9%;
+  --popover-foreground: 40 20% 90%;
+  --popover-border: 35 30% 25%;
+  
+  --primary: 46 65% 52%; /* Gold */
+  --primary-foreground: 30 20% 5%;
+  
+  --secondary: 30 15% 15%;
+  --secondary-foreground: 40 20% 85%;
+  
+  --muted: 30 10% 20%;
+  --muted-foreground: 40 15% 70%;
+  
+  --accent: 30 20% 18%;
+  --accent-foreground: 46 65% 52%;
+  
+  --destructive: 0 60% 40%;
+  --destructive-foreground: 40 20% 90%;
+  
+  --input: 30 25% 20%;
+  --ring: 46 65% 52%;
+
+  --app-font-sans: 'Outfit', sans-serif;
+  --app-font-serif: 'Cinzel', 'Rozha One', serif;
+  --app-font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+  
+  --button-outline: rgba(255, 255, 255, 0.1);
+  --badge-outline: rgba(255, 255, 255, 0.05);
+
+  --elevate-1: rgba(255, 255, 255, 0.03);
+  --elevate-2: rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.5);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-md: 0 6px 10px -2px rgba(0,0,0,0.6), 0 2px 4px -1px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 20px -3px rgba(0,0,0,0.7), 0 4px 6px -2px rgba(0,0,0,0.5);
+  --shadow-xl: 0 20px 30px -5px rgba(0,0,0,0.8), 0 8px 10px -3px rgba(0,0,0,0.6);
+}
+
+.dark {
+  /* Inherit all from root, we're essentially dark mode by default */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .font-title-serif {
+    font-family: 'Playfair Display', serif;
+  }
+  .text-glow {
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+  .box-glow {
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  }
+  .ornate-border {
+    position: relative;
+  }
+  .ornate-border::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .ornate-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  
+  .hub-gradient {
+    background: linear-gradient(180deg, rgba(26,22,18,0.95) 0%, rgba(18,14,10,0.98) 100%);
+  }
+
+  .nav-gradient {
+    background: linear-gradient(180deg, rgba(18,14,10,0.9) 0%, rgba(18,14,10,0) 100%);
+  }
+}
+
+/* Thin themed scrollbar for the info panel (no horizontal bar) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 0;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.3);
+  border-radius: 9999px;
+}

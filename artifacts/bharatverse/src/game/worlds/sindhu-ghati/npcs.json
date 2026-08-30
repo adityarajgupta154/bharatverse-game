@@ -1,0 +1,80 @@
+[
+  {
+    "id": "granary-keeper",
+    "category": "context",
+    "position": { "x": 715, "y": 205 },
+    "dialogueLines": [
+      { "hi": "Anaaj surakshit hai, shahar majboot hai.", "en": "The grain is safe, the city is strong." }
+    ],
+    "linkedBuildingId": "anaaj-bhandaar"
+  },
+  {
+    "id": "mystery-house-resident",
+    "category": "context",
+    "position": { "x": 905, "y": 290 },
+    "dialogueLines": [
+      { "hi": "Kuch raaz samay ke saath khulte hain.", "en": "Some secrets open only with time." }
+    ],
+    "linkedBuildingId": "aakhri-raaz"
+  },
+  {
+    "id": "granary-pair",
+    "category": "context",
+    "position": { "x": 465, "y": 455 },
+    "dialogueLines": [
+      { "hi": "Gyaan baantne se badhta hai.", "en": "Knowledge grows by sharing." }
+    ],
+    "linkedBuildingId": "anaaj-bhandaar"
+  },
+  {
+    "id": "central-path-child",
+    "category": "narrator",
+    "position": { "x": 512, "y": 640 },
+    "dialogueLines": [
+      { "hi": "Har gali ek kahani, har mod ek yaad.", "en": "Every street a story, every turn a memory." }
+    ]
+  },
+  {
+    "id": "bath-side-resident",
+    "category": "context",
+    "position": { "x": 55, "y": 640 },
+    "dialogueLines": [
+      { "hi": "Yahan shuddhi hai, yahan se nayi soch.", "en": "Here is purity, and from here, new thought." }
+    ],
+    "linkedBuildingId": "vishaal-snanagar"
+  },
+  {
+    "id": "bazaar-trader",
+    "category": "context",
+    "position": { "x": 700, "y": 790 },
+    "dialogueLines": [
+      { "hi": "Vyapar se badhta hai vishwas ka sansaar.", "en": "Trade grows the world of trust." }
+    ],
+    "linkedBuildingId": "bazaar"
+  },
+  {
+    "id": "drain-street-resident",
+    "category": "context",
+    "position": { "x": 420, "y": 935 },
+    "dialogueLines": [
+      { "hi": "Jal ka pravah, jeevan ki chaah.", "en": "The flow of water, the wish of life." }
+    ],
+    "linkedBuildingId": "dhaki-naaliyon-ki-gali"
+  },
+  {
+    "id": "well-woman-left",
+    "category": "context",
+    "position": { "x": 75, "y": 1280 },
+    "dialogueLines": [
+      { "hi": "Jal amrit hai, iski raksha karo.", "en": "Water is nectar — protect it." }
+    ]
+  },
+  {
+    "id": "well-woman-right",
+    "category": "context",
+    "position": { "x": 950, "y": 1300 },
+    "dialogueLines": [
+      { "hi": "Kal ke liye, aaj sambhalo.", "en": "Save today for tomorrow." }
+    ]
+  }
+]

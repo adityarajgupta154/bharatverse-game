@@ -1,0 +1,97 @@
+[
+  {
+    "id": "sheher-ka-dwaar",
+    "name": "Sheher ka Dwaar",
+    "subtitle": "City Entry",
+    "type": "narrative_gate",
+    "initialState": "explored",
+    "position": { "x": 480, "y": 1240 },
+    "hotspot": { "w": 310, "h": 330 },
+    "unlocksAfter": [],
+    "routeTarget": "recap:sindhu-intro"
+  },
+  {
+    "id": "vishaal-snanagar",
+    "name": "Vishaal Snanagar",
+    "subtitle": "The Great Bath",
+    "type": "explore",
+    "initialState": "explored",
+    "position": { "x": 165, "y": 730 },
+    "hotspot": { "w": 300, "h": 320 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:great-bath"
+  },
+  {
+    "id": "anaaj-bhandaar",
+    "name": "Anaaj Bhandaar",
+    "subtitle": "The Great Granary",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 520, "y": 250 },
+    "hotspot": { "w": 280, "h": 290 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:granary"
+  },
+  {
+    "id": "dhaki-naaliyon-ki-gali",
+    "name": "Dhaki Naaliyon ki Gali",
+    "subtitle": "Street of Covered Drains",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 512, "y": 700 },
+    "hotspot": { "w": 240, "h": 230 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:covered-drains"
+  },
+  {
+    "id": "bazaar",
+    "name": "Bazaar",
+    "subtitle": "Trade & Exchange",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 815, "y": 745 },
+    "hotspot": { "w": 270, "h": 300 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:bazaar"
+  },
+  {
+    "id": "naali-paheli",
+    "name": "Naali Paheli",
+    "subtitle": "Drain Puzzle",
+    "type": "minigame",
+    "initialState": "story_mission",
+    "position": { "x": 200, "y": 1065 },
+    "hotspot": { "w": 270, "h": 300 },
+    "unlocksAfter": [],
+    "routeTarget": "minigame:drain-puzzle"
+  },
+  {
+    "id": "sheher-banao",
+    "name": "Sheher Banao",
+    "subtitle": "City Builder",
+    "type": "builder",
+    "initialState": "story_mission",
+    "position": { "x": 800, "y": 1070 },
+    "hotspot": { "w": 270, "h": 300 },
+    "unlocksAfter": [],
+    "routeTarget": "builder:city-builder"
+  },
+  {
+    "id": "aakhri-raaz",
+    "name": "Aakhri Raaz",
+    "subtitle": "House of Mysteries",
+    "type": "climax",
+    "initialState": "locked",
+    "position": { "x": 795, "y": 385 },
+    "hotspot": { "w": 250, "h": 260 },
+    "unlocksAfter": [
+      "vishaal-snanagar",
+      "anaaj-bhandaar",
+      "dhaki-naaliyon-ki-gali",
+      "bazaar",
+      "naali-paheli",
+      "sheher-banao"
+    ],
+    "routeTarget": "climax:mystery-ending"
+  }
+]
