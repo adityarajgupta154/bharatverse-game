@@ -76,6 +76,13 @@ export interface WorldConfig {
   nodeId: string;
   /** Logical size of the world painting. Width MUST be 1024 (1:1 with stage px). */
   imageSize: { w: number; h: number };
+  /** Smriti's pinned dialogue for this world (config-driven so the screen stays generic). */
+  lines: {
+    /** Default line while roaming the world. */
+    welcome: string;
+    /** Shown when the player taps a locked building. */
+    locked: string;
+  };
   buildings: WorldBuilding[];
   npcs: WorldNpc[];
 }

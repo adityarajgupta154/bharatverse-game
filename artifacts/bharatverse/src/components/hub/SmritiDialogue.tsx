@@ -2,16 +2,18 @@ import { useGame } from '@/game/store';
 import smritiFrame from '@/assets/images/ui/smriti-frame.png';
 import { useEffect, useState } from 'react';
 
-export function SmritiDialogue() {
+export function SmritiDialogue({ line }: { line?: string }) {
   const { state } = useGame();
   const selectedNode = state.nodes.find(n => n.id === state.selectedNodeId);
 
   const [displayText, setDisplayText] = useState('');
   const [typing, setTyping] = useState(false);
 
-  const fullText = selectedNode
-    ? (selectedNode.status === 'locked' && selectedNode.smritiLockedLine ? selectedNode.smritiLockedLine : selectedNode.smritiLine)
-    : 'Naksha bhool raha hai, Aru. Chal ke har dwar tak jao.';
+  const fullText =
+    line ??
+    (selectedNode
+      ? (selectedNode.status === 'locked' && selectedNode.smritiLockedLine ? selectedNode.smritiLockedLine : selectedNode.smritiLine)
+      : 'Naksha bhool raha hai, Aru. Chal ke har dwar tak jao.');
 
   useEffect(() => {
     setDisplayText('');

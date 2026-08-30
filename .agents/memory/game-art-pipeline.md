@@ -12,3 +12,4 @@ description: Quirks of generateImage/editImage/removeImageBackground worth remem
 - `removeImageBackground` handles busy illustrated scenes fine (kept orb glow, clean hair edges) — no need to regenerate subjects on plain backgrounds first.
 - **Pixel-parity UI**: when live UI must match painted reference art exactly, crop the UI straight out of the reference (`magick -crop`) instead of rebuilding it with CSS; blank dynamic zones by stretching a 1px clean-bg column over them, then render live text/state on top. Verify by `-append`-stacking a live screenshot strip against the same reference strip.
   **Why:** hand-rebuilt nav/bottom bars took repeated font/color tuning rounds and still drifted; cutouts matched on the first try.
+- World hotspot calibration: screenshot `/world/<id>?debug&at=<worldY>` (debug = outlines + id labels, at = initial pan), measure against art, then update buildings/npcs JSON. Screen→world: divide by viewport scale, add scrollY.

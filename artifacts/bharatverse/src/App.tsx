@@ -22,6 +22,7 @@ import Heritage from '@/pages/Heritage';
 import Settings from '@/pages/Settings';
 import Oracle from '@/pages/Oracle';
 import Chapter from '@/pages/Chapter';
+import WorldStage from '@/components/world/WorldStage';
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/oracle" component={Oracle} />
           <Route path="/chapter/:nodeId" component={Chapter} />
+          <Route path="/world/:nodeId" component={WorldStage} />
           <Route component={NotFound} />
         </Switch>
       </StageLayout>

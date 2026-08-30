@@ -28,6 +28,12 @@ export function TopNav() {
   const { state } = useGame();
   const [location] = useLocation();
 
+  // Node worlds and chapters live inside the Memory Map section.
+  const isTabActive = (id: string) =>
+    id === '/'
+      ? location === '/' || location.startsWith('/world') || location.startsWith('/chapter')
+      : location === id;
+
   return (
     <div className="absolute top-0 left-0 w-[1024px] h-[72px] border-b border-primary/20 z-50 pointer-events-auto">
 
@@ -36,7 +42,7 @@ export function TopNav() {
 
       {/* Tabs */}
       {tabs.map(tab => {
-        const isActive = location === tab.id;
+        const isActive = isTabActive(tab.id);
         return (
           <Link
             key={tab.id}
@@ -62,7 +68,7 @@ export function TopNav() {
       {/* Tab art (icon + label cut from reference). Inactive tabs are baked into the background,
           so live art is only needed for the active tab (gold) and the Memory Map tab (its zone is blanked). */}
       {tabs.map(tab => {
-        const isActive = location === tab.id;
+        const isActive = isTabActive(tab.id);
         if (!isActive && tab.id !== '/') return null;
         return (
           <img

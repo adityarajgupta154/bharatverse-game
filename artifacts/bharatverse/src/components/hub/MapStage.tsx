@@ -1,9 +1,12 @@
 import { useGame } from '@/game/store';
+import { useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
 import hubReference from '@/assets/images/hub-reference.png';
+import { getWorld } from '@/game/worlds';
 
 export function MapStage() {
   const { state, selectNode } = useGame();
+  const [, navigate] = useLocation();
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-auto">
@@ -44,7 +47,13 @@ export function MapStage() {
               aria-pressed={selected}
               disabled={!visible}
               tabIndex={visible ? 0 : -1}
-              onClick={() => selectNode(node.id)}
+              onClick={() => {
+                selectNode(node.id);
+                // Gates whose inner world exists lead straight into it (PRD 6.1).
+                if (node.status !== 'locked' && getWorld(node.id)) {
+                  navigate(`/world/${node.id}`);
+                }
+              }}
               className="absolute inset-0 rounded-[100%] cursor-pointer disabled:cursor-default group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
             >
               {visible && (
