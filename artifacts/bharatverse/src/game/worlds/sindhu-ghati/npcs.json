@@ -1,11 +1,22 @@
 [
   {
+    "id": "sack-carrier",
+    "name": "Bora uthaye aadmi",
+    "category": "ambient",
+    "position": { "x": 372, "y": 272 },
+    "dialogueLines": [
+      { "hi": "Anaaj bhandaar tak ek aur phera.", "en": "One more round to the granary." },
+      { "hi": "Mehnat ka bojh bhi meetha lagta hai.", "en": "Even the weight of hard work feels sweet." }
+    ]
+  },
+  {
     "id": "granary-keeper",
     "name": "Anaaj rakshak",
     "category": "context",
     "position": { "x": 763, "y": 285 },
     "dialogueLines": [
-      { "hi": "Anaaj surakshit hai, shahar majboot hai.", "en": "The grain is safe, the city is strong." }
+      { "hi": "Anaaj surakshit hai, shahar majboot hai.", "en": "The grain is safe, the city is strong." },
+      { "hi": "Har daana gina jaata hai yahan.", "en": "Every grain is counted here." }
     ],
     "linkedBuildingId": "anaaj-bhandaar"
   },
@@ -26,9 +37,21 @@
     "category": "context",
     "position": { "x": 510, "y": 498 },
     "dialogueLines": [
-      { "hi": "Gyaan baantne se badhta hai.", "en": "Knowledge grows by sharing." }
+      { "hi": "Gyaan baantne se badhta hai.", "en": "Knowledge grows by sharing." },
+      { "hi": "Suna? Bazaar mein nayi mohar aayi hai.", "en": "Heard? A new seal arrived in the bazaar." }
     ],
     "linkedBuildingId": "anaaj-bhandaar"
+  },
+  {
+    "id": "running-child",
+    "name": "Daudta bachcha",
+    "category": "ambient",
+    "position": { "x": 410, "y": 678 },
+    "hotspot": { "w": 60, "h": 95 },
+    "dialogueLines": [
+      { "hi": "Pakdo toh jaano!", "en": "Catch me if you can!" },
+      { "hi": "Sabse tez main hoon!", "en": "I'm the fastest of all!" }
+    ]
   },
   {
     "id": "central-path-child",
@@ -36,7 +59,8 @@
     "category": "narrator",
     "position": { "x": 512, "y": 698 },
     "dialogueLines": [
-      { "hi": "Har gali ek kahani, har mod ek yaad.", "en": "Every street a story, every turn a memory." }
+      { "hi": "Har gali ek kahani, har mod ek yaad.", "en": "Every street a story, every turn a memory." },
+      { "hi": "Smriti didi kehti hain, yaadein hi khazana hain.", "en": "Smriti didi says memories are the real treasure." }
     ]
   },
   {
@@ -46,9 +70,21 @@
     "position": { "x": 245, "y": 700 },
     "hotspot": { "w": 80, "h": 90 },
     "dialogueLines": [
-      { "hi": "Yahan shuddhi hai, yahan se nayi soch.", "en": "Here is purity, and from here, new thought." }
+      { "hi": "Yahan shuddhi hai, yahan se nayi soch.", "en": "Here is purity, and from here, new thought." },
+      { "hi": "Snan sirf tan ka nahi, man ka bhi hota hai.", "en": "Bathing cleanses the mind, not just the body." }
     ],
     "linkedBuildingId": "vishaal-snanagar"
+  },
+  {
+    "id": "village-dog",
+    "name": "Gaon ka kutta",
+    "category": "ambient",
+    "position": { "x": 447, "y": 746 },
+    "hotspot": { "w": 75, "h": 60 },
+    "dialogueLines": [
+      { "hi": "Bhau bhau!", "en": "Woof woof!" },
+      { "hi": "Bhau! Kaun aaya?", "en": "Woof! Who's there?" }
+    ]
   },
   {
     "id": "bazaar-trader",
@@ -56,7 +92,8 @@
     "category": "context",
     "position": { "x": 665, "y": 830 },
     "dialogueLines": [
-      { "hi": "Vyapar se badhta hai vishwas ka sansaar.", "en": "Trade grows the world of trust." }
+      { "hi": "Vyapar se badhta hai vishwas ka sansaar.", "en": "Trade grows the world of trust." },
+      { "hi": "Har mohar par vyapari ki pehchaan hoti hai.", "en": "Each seal carries a trader's identity." }
     ],
     "linkedBuildingId": "bazaar"
   },
@@ -66,9 +103,30 @@
     "category": "context",
     "position": { "x": 505, "y": 984 },
     "dialogueLines": [
-      { "hi": "Jal ka pravah, jeevan ki chaah.", "en": "The flow of water, the wish of life." }
+      { "hi": "Jal ka pravah, jeevan ki chaah.", "en": "The flow of water, the wish of life." },
+      { "hi": "Hamari dhaki naaliyan apne samay se bahut aage thin.", "en": "Our covered drains were far ahead of their time." }
     ],
     "linkedBuildingId": "dhaki-naaliyon-ki-gali"
+  },
+  {
+    "id": "gate-guard-left",
+    "name": "Dwar ka pehredaar",
+    "category": "ambient",
+    "position": { "x": 430, "y": 1375 },
+    "dialogueLines": [
+      { "hi": "Sheher ki raksha, hamara dharam.", "en": "Guarding the city is our duty." },
+      { "hi": "Andar jao, par niyam yaad rakho.", "en": "Go in, but remember the rules." }
+    ]
+  },
+  {
+    "id": "gate-guard-right",
+    "name": "Dwar ka doosra pehredaar",
+    "category": "ambient",
+    "position": { "x": 588, "y": 1372 },
+    "dialogueLines": [
+      { "hi": "Savdhaan raho, swagat hai.", "en": "Stay alert — and welcome." },
+      { "hi": "Yeh dwar raat ko band hota hai.", "en": "This gate closes at night." }
+    ]
   },
   {
     "id": "well-woman-right",
