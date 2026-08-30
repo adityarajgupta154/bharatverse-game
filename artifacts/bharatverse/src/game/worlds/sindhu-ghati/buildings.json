@@ -81,7 +81,7 @@
     "name": "Aakhri Raaz",
     "subtitle": "House of Mysteries",
     "type": "climax",
-    "initialState": "locked",
+    "initialState": "story_mission",
     "position": { "x": 780, "y": 385 },
     "hotspot": { "w": 270, "h": 260 },
     "unlocksAfter": [

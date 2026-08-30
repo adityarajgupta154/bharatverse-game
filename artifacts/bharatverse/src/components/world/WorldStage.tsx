@@ -22,7 +22,7 @@ const STAGE_H = 592;
 export default function WorldStage() {
   const { nodeId } = useParams<{ nodeId: string }>();
   const [, setLocation] = useLocation();
-  const { state, selectNode } = useGame();
+  const { state, selectNode, markBuildingComplete } = useGame();
   const world = getWorld(nodeId);
   // Entry gate: the world must exist AND its map node must be unlocked —
   // mirrors Chapter.tsx so a direct URL can't bypass progression.
@@ -49,12 +49,16 @@ export default function WorldStage() {
     []
   );
 
-  // Story-complete buildings count as done from the start (Task 3 adds
-  // persisted player completions on top of this set).
-  const completed = useMemo(
-    () => (world ? initiallyCompleted(world.config) : new Set<string>()),
-    [world]
-  );
+  // Completed = authored story-completions + the player's persisted deltas.
+  const completed = useMemo(() => {
+    const set = new Set<string>(world ? initiallyCompleted(world.config) : []);
+    if (world) {
+      for (const id of state.completedBuildings[world.config.nodeId] ?? []) {
+        set.add(id);
+      }
+    }
+    return set;
+  }, [world, state.completedBuildings]);
 
   useEffect(() => {
     if (world && state.selectedNodeId !== world.config.nodeId) {
@@ -208,6 +212,12 @@ export default function WorldStage() {
           building={active.b}
           state={active.s}
           pendingNames={pendingNames}
+          debug={debug}
+          onDevComplete={() => {
+            markBuildingComplete(world.config.nodeId, active.b.id);
+            setActive(null);
+            setSmritiLine(lines.welcome);
+          }}
           onClose={() => {
             setActive(null);
             setSmritiLine(lines.welcome);

@@ -34,12 +34,17 @@ export function BuildingCard({
   building,
   state,
   pendingNames,
+  debug,
+  onDevComplete,
   onClose,
 }: {
   building: WorldBuilding;
   state: BuildingState;
   /** Names of buildings still pending when this one is locked. */
   pendingNames: string[];
+  /** Dev-only (?debug): expose a mark-complete action for gating tests. */
+  debug?: boolean;
+  onDevComplete?: () => void;
   onClose: () => void;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -145,8 +150,16 @@ export function BuildingCard({
           <>
             <p className="text-[8px] leading-[1.6] text-foreground/90 px-[6px]">{meta.line}</p>
             <span className="inline-block mt-[10px] text-[6.5px] uppercase tracking-[0.14em] text-primary border border-primary/40 rounded-full px-[8px] py-[3px]">
-              Jald aa raha hai
+              {state === 'explored' ? '✓ Yaad laut chuki hai' : 'Jald aa raha hai'}
             </span>
+            {debug && state !== 'explored' && onDevComplete && (
+              <button
+                onClick={onDevComplete}
+                className="block mx-auto mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-red-300 border border-red-400/50 rounded-full px-[8px] py-[3px] hover:bg-red-400/10 transition-colors"
+              >
+                Mark complete (dev)
+              </button>
+            )}
           </>
         )}
       </div>
