@@ -1,8 +1,9 @@
 [
   {
     "id": "granary-keeper",
+    "name": "Anaaj rakshak",
     "category": "context",
-    "position": { "x": 715, "y": 205 },
+    "position": { "x": 763, "y": 285 },
     "dialogueLines": [
       { "hi": "Anaaj surakshit hai, shahar majboot hai.", "en": "The grain is safe, the city is strong." }
     ],
@@ -10,8 +11,10 @@
   },
   {
     "id": "mystery-house-resident",
+    "name": "Rahasyamai awaaz",
     "category": "context",
-    "position": { "x": 905, "y": 290 },
+    "position": { "x": 855, "y": 360 },
+    "hotspot": { "w": 90, "h": 70 },
     "dialogueLines": [
       { "hi": "Kuch raaz samay ke saath khulte hain.", "en": "Some secrets open only with time." }
     ],
@@ -19,8 +22,9 @@
   },
   {
     "id": "granary-pair",
+    "name": "Baat karte gaon wale",
     "category": "context",
-    "position": { "x": 465, "y": 455 },
+    "position": { "x": 510, "y": 498 },
     "dialogueLines": [
       { "hi": "Gyaan baantne se badhta hai.", "en": "Knowledge grows by sharing." }
     ],
@@ -28,16 +32,19 @@
   },
   {
     "id": "central-path-child",
+    "name": "Raah ka bachcha",
     "category": "narrator",
-    "position": { "x": 512, "y": 640 },
+    "position": { "x": 512, "y": 698 },
     "dialogueLines": [
       { "hi": "Har gali ek kahani, har mod ek yaad.", "en": "Every street a story, every turn a memory." }
     ]
   },
   {
     "id": "bath-side-resident",
+    "name": "Snanagar ki awaaz",
     "category": "context",
-    "position": { "x": 55, "y": 640 },
+    "position": { "x": 245, "y": 700 },
+    "hotspot": { "w": 80, "h": 90 },
     "dialogueLines": [
       { "hi": "Yahan shuddhi hai, yahan se nayi soch.", "en": "Here is purity, and from here, new thought." }
     ],
@@ -45,8 +52,9 @@
   },
   {
     "id": "bazaar-trader",
+    "name": "Bazaar ka vyapari",
     "category": "context",
-    "position": { "x": 700, "y": 790 },
+    "position": { "x": 665, "y": 830 },
     "dialogueLines": [
       { "hi": "Vyapar se badhta hai vishwas ka sansaar.", "en": "Trade grows the world of trust." }
     ],
@@ -54,27 +62,22 @@
   },
   {
     "id": "drain-street-resident",
+    "name": "Gali ka nivasi",
     "category": "context",
-    "position": { "x": 420, "y": 935 },
+    "position": { "x": 505, "y": 984 },
     "dialogueLines": [
       { "hi": "Jal ka pravah, jeevan ki chaah.", "en": "The flow of water, the wish of life." }
     ],
     "linkedBuildingId": "dhaki-naaliyon-ki-gali"
   },
   {
-    "id": "well-woman-left",
-    "category": "context",
-    "position": { "x": 75, "y": 1280 },
-    "dialogueLines": [
-      { "hi": "Jal amrit hai, iski raksha karo.", "en": "Water is nectar — protect it." }
-    ]
-  },
-  {
     "id": "well-woman-right",
+    "name": "Kuen ki stree",
     "category": "context",
-    "position": { "x": 950, "y": 1300 },
+    "position": { "x": 723, "y": 1393 },
     "dialogueLines": [
-      { "hi": "Kal ke liye, aaj sambhalo.", "en": "Save today for tomorrow." }
+      { "hi": "Kal ke liye, aaj sambhalo.", "en": "Save today for tomorrow." },
+      { "hi": "Jal amrit hai, iski raksha karo.", "en": "Water is nectar — protect it." }
     ]
   }
 ]

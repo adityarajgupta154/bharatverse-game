@@ -57,6 +57,8 @@ export type NpcCategory = 'ambient' | 'context' | 'narrator';
 
 export interface WorldNpc {
   id: string;
+  /** Human-readable name for accessibility labels, e.g. "Anaaj rakshak". */
+  name?: string;
   category: NpcCategory;
   /** Anchor (feet) of the painted NPC, world px. */
   position: { x: number; y: number };

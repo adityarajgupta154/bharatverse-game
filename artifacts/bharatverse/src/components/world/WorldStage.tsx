@@ -10,6 +10,7 @@ import { LegendBar } from '@/components/hub/LegendBar';
 import { RightControls } from '@/components/hub/RightControls';
 import { NodeBuilding } from './NodeBuilding';
 import { BuildingCard } from './BuildingCard';
+import { NpcLayer } from './NpcLayer';
 
 const STAGE_H = 592;
 
@@ -171,6 +172,14 @@ export default function WorldStage() {
               onActivate={handleActivate}
             />
           ))}
+          {/* NPCs sit above building zones: a villager in front of a building
+              speaks on hover; the building stays clickable around them. */}
+          <NpcLayer
+            npcs={world.config.npcs}
+            debug={debug}
+            suppressRef={dragRef}
+            scrollY={scrollY}
+          />
         </div>
 
         {/* Slim pan indicator */}
