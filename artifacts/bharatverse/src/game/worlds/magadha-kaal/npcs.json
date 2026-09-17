@@ -1,0 +1,19 @@
+[
+  {
+    "id": "bhikshu-anand",
+    "name": "Bhikshu Anand",
+    "category": "context",
+    "position": { "x": 330, "y": 620 },
+    "dialogueLines": [
+      {
+        "hi": "Toofan me pothiyan bikhar gayi hain, Aru… Dharmaganja ka gyan samet lo!",
+        "en": "The storm scattered the manuscripts, Aru… gather the knowledge of Dharmaganja!"
+      },
+      {
+        "hi": "Nalanda me duniya bhar se vidyarthi aate the — Cheen se, Tibbat se!",
+        "en": "Students came to Nalanda from all over the world — from China, from Tibet!"
+      }
+    ],
+    "linkedBuildingId": "pothi-khoj"
+  }
+]

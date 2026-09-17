@@ -1,0 +1,117 @@
+# BharatVerse — Aru Character Rig + Village Camera/Quality Fix — PRD + Tasks
+**Two bugs being fixed:** (1) Aru moves as one rigid flat image — no leg/arm/limb motion like your earlier 2D project had. (2) Entering Sindhu Ghati, the camera/scroll behaves "ajeeb" (weird, jumpy) and visual quality drops.
+**Research done:** Re-checked `adityarajgupta154/Act` (full README/architecture re-read) + general 2D-camera/rendering research (Godot/Unity/MonoGame dev community threads on exactly this class of bug — jittery camera + blurry scaled backgrounds). Honest note upfront: Act's README documents its architecture at a high level (Phaser world map + DOM minigames) but does **not** publicly document a limb-rig/skeletal character system — I can't claim it has one just to match what you remember. What you're describing (body parts rotating independently) is a well-known, well-documented 2D technique regardless of which project you saw it in before — I've specified exactly that technique below, buildable with what you already have.
+
+---
+
+# PART A — PRD
+
+## A.1 Bug 1 — Aru is a Single Rigid Image (no limb motion)
+
+### Diagnosis
+Per the earlier movement-fix work, Aru is currently rendered from `aru-sprite-cut.png` — **one flat image** that translates position but never changes shape. This is why he "slides" instead of walking: there's no leg-swing, arm-swing, or bob to sell motion. What you remember from your earlier project — body parts rotating independently — is a **segmented/rigged character** (sometimes called a "paper-doll" or "cutout" rig): the character is split into separate pieces (head, torso, upper-arm, lower-arm or just arm, upper-leg, lower-leg or just leg), each with its own pivot point, and a walk-cycle formula rotates each piece back and forth as the character moves. This is exactly how classic Flash-era and many modern lightweight 2D games animate characters **without needing dozens of hand-drawn frames** — it's math-driven (sine-wave swing), not frame-sheet-driven.
+
+### Why this is the right fix for your situation specifically
+- You don't need a new art style or a professional animator — you need the EXISTING Aru artwork cut into 5–7 pieces instead of 1
+- It's cheap to build on canvas (you already have a canvas rendering pipeline from the movement-fix work) — each frame, draw each body-part image at a calculated offset+rotation instead of one static image at one position
+- It automatically gives you idle (subtle sway), walk (moderate swing), AND run (faster, wider swing) for free from the same rig, just by changing the animation's speed/amplitude constants — ties in directly with the Run/Sprint feature from the previous PRD
+
+### The rig (specific plan)
+| Piece | Pivot point | Motion during walk cycle |
+|---|---|---|
+| Torso + head (usually kept as one piece for simplicity) | Center-mass, roughly hip height | Very subtle vertical bob (a few px up/down, synced to the step cycle) |
+| Left arm | Shoulder | Swings forward/back, opposite phase to left leg |
+| Right arm | Shoulder | Swings forward/back, opposite phase to right leg |
+| Left leg | Hip | Swings forward/back |
+| Right leg | Hip | Swings forward/back, opposite phase to left leg |
+
+- Walk cycle driven by a single phase value that advances based on **distance moved** (not just elapsed time) — this is important: if it's time-based, Aru's legs will keep swinging even if he's blocked against a wall and not actually moving; distance-based swinging only animates when he's actually covering ground
+- Idle state (not moving): all pieces return to a small resting sway animation, not a hard freeze-frame (a completely frozen character looks more "broken" than a subtly breathing one)
+- Run state: same rig, higher swing frequency + slightly larger amplitude, reusing the Run/Sprint flag from the earlier movement-fix PRD
+
+### Effort-honest note
+Cutting existing art into pieces (if you still have layered source files from whoever made `aru-sprite-cut.png`) is fast. If you only have the already-flattened single PNG, someone will need to manually segment it (basic photo-editing, not redraw) — flag this as the one dependency that could add time.
+
+## A.2 Bug 2 — Village Camera Feels "Ajeeb" + Quality Drop
+
+### Diagnosis (two separate, commonly-confused problems, per general 2D-engine research)
+**Problem 2a — Camera jitter/weirdness:** The single most common cause of exactly what you're describing ("character upar jaata hai", scroll feels wrong) is **sub-pixel camera positioning** — if the camera's follow position isn't rounded to whole pixels every frame, both the background and the character appear to jitter/drift, especially noticeable on a vertically-tall image where there's more room to scroll. A second common cause: if the camera's follow-target anchor is set to the sprite's top-left corner instead of its feet/center, the character visually "floats" or "jumps" when the camera recenters, which matches your "upar jaata hai" description closely.
+
+**Problem 2b — Quality drop:** This is almost always a **canvas resolution vs. display resolution mismatch**. If the canvas's internal pixel buffer is sized to the CSS-displayed size directly (not accounting for the screen's device pixel ratio — 2x or 3x on most modern phones/laptops), the browser stretches a lower-res buffer to fill a higher-res display, causing exactly the blur/quality-loss you're seeing. This is separate from the jitter issue but often gets blamed together since both show up "when scrolling."
+
+### Fix Plan
+1. **Round camera position to integer pixels** every frame before drawing (`Math.round()` on the camera's x/y before applying it to any draw call) — eliminates sub-pixel jitter
+2. **Anchor the camera-follow target correctly** — follow Aru's feet-center point (bottom-center of his bounding box), not his sprite's origin/top-left — this alone typically fixes "character floating/jumping" complaints
+3. **Smooth the follow with damping/lerp**, not a hard snap-to-position — camera eases toward Aru's position each frame (e.g., moves 15–20% of the remaining distance per frame) rather than teleporting exactly onto him — removes the "jumpy" feeling on direction changes
+4. **Fix canvas resolution for device pixel ratio** — set the canvas's actual pixel buffer size to `displayWidth × devicePixelRatio` / `displayHeight × devicePixelRatio`, scale the drawing context accordingly, keep the CSS-displayed size unchanged — this directly fixes the blur/quality complaint
+5. **Re-verify camera clamp bounds** using the CORRECT scaled dimensions of `village-sindhu.jpg` (1024×1536) after the above fixes — a stale/incorrect clamp calculation can also cause visible "jump" at the top/bottom edges of the tall image
+
+### Why these are separate from the earlier movement-fix PRD's camera task
+The earlier PRD (Task 3.3/4.3 in the Movement Bridge Fix doc) specified vertical-follow camera generically but did NOT specify pixel-rounding, anchor-point correctness, damping, or DPR-aware canvas sizing — these are the specific missing details causing what you're now seeing live. This PRD is the detailed follow-up fixing exactly those gaps.
+
+## A.3 What Stays the Same
+- `village-sindhu.jpg` background art — unchanged
+- Existing movement engine (`input.ts`/`movement.ts`) — unchanged, this fix touches rendering/camera code, not movement logic
+- Building/NPC proximity system from the prior PRD — unchanged, unaffected by this fix
+
+---
+
+# PART B — BUILD TASKS
+
+## TASK 0 — Confirm Source Assets
+- 0.1 Check whether layered/segmented source files exist for Aru's art (ask whoever produced `aru-sprite-cut.png`) — if yes, export 5–7 separate transparent PNGs (torso+head, left-arm, right-arm, left-leg, right-leg); if no, manually segment the existing flattened PNG using basic photo-editing (crop/mask each limb out, fill in any hidden overlap areds where limbs crossed in the original pose)
+- **Acceptance:** 5–7 individual transparent PNG pieces exist, each with a sensible pivot point noted (e.g., top-center of the arm piece = shoulder pivot).
+
+## TASK 1 — Character Rig Data + Renderer
+- 1.1 Define a small rig config: `{ piece: 'left_leg', pivot: {x,y relative to piece image}, restAngle: 0 }` for each of the 5–7 pieces
+- 1.2 Build a `drawRiggedCharacter(ctx, position, phase, state)` function: for each piece, `ctx.save()` → translate to piece's world position (position + pivot offset) → rotate by that piece's current angle (computed from `phase` and `state`) → draw the piece image anchored at its pivot → `ctx.restore()`
+- 1.3 Angle formulas: legs/arms use `angle = amplitude × sin(phase)`, with left/right pieces offset by `π` (opposite phase) so they alternate naturally; torso gets a small vertical bob using `sin(phase × 2)` (bobs twice per stride, once per footfall)
+- **Acceptance:** function renders a static-phase test correctly (all pieces visible, correctly positioned, no visible seams/gaps between torso and limbs at rest pose).
+
+## TASK 2 — Wire Phase to Actual Movement
+- 2.1 Track cumulative distance moved (not elapsed time) since last frame; advance `phase` proportionally to distance moved × a constant stride-length divisor
+- 2.2 When Aru is stationary (no input / blocked by collision), phase stops advancing — instead blend toward a separate, slow idle-sway phase
+- 2.3 When Run/Sprint is active (from the earlier movement-fix PRD's Shift feature), increase the amplitude/frequency constants used in Task 1.3's formulas
+- **Acceptance:** legs/arms only swing while Aru is genuinely covering ground; standing still (even mid-input against a wall) shows idle sway, not walk-cycle; running visibly swings faster/wider than walking.
+
+## TASK 3 — Directional Facing
+- 3.1 Confirm existing facing-flip logic (already present per the earlier report — Aru flips horizontally based on movement direction in the minigame) extends correctly to the new rigged renderer — flipping should mirror the whole piece arrangement, not just the flat sprite
+- **Acceptance:** walking left vs right shows correctly mirrored limb arrangement, not a broken/overlapping rig.
+
+## TASK 4 — Camera Pixel Rounding
+- 4.1 Locate the camera's position-update code (from the earlier movement-fix work) — add `Math.round()` to both x and y immediately before they're used in any draw-offset calculation
+- **Acceptance:** visually compare before/after at slow movement speed — jitter/shimmer on background edges should disappear.
+
+## TASK 5 — Camera Follow-Anchor Correction
+- 5.1 Change the camera's follow-target from Aru's sprite origin to his **feet-center point** — compute this as the bottom-center of his current bounding box/collision box (already defined per the earlier movement report's 28×20px collision box), not the rig's draw origin
+- **Acceptance:** the "character floats/jumps" feeling on movement/direction-change should be gone; Aru should feel visually anchored to the ground plane.
+
+## TASK 6 — Camera Damping/Smoothing
+- 6.1 Replace any hard camera-snap with a lerp: `camera.x += (targetX - camera.x) * dampingFactor` each frame (start with `dampingFactor ≈ 0.15–0.2`, tune by feel), same for y
+- 6.2 Re-apply Task 4's rounding AFTER the damping calculation, not before (rounding too early defeats the smoothing)
+- **Acceptance:** camera now eases toward Aru rather than snapping; test rapid direction changes (e.g., quickly reversing direction) — camera should smoothly catch up, not jump.
+
+## TASK 7 — Canvas Resolution / Device Pixel Ratio Fix
+- 7.1 On canvas setup/resize, read `window.devicePixelRatio` (fallback to 1 if unavailable)
+- 7.2 Set the canvas element's actual `width`/`height` attributes (the internal pixel buffer) to `displayedCSSWidth × dpr` / `displayedCSSHeight × dpr`
+- 7.3 Keep the CSS `width`/`height` style properties at the original displayed size (so layout doesn't change)
+- 7.4 Scale the drawing context once via `ctx.scale(dpr, dpr)` so all existing draw calls continue to use un-scaled coordinates
+- **Acceptance:** on a high-DPI device/display, the village background and all sprites render visibly sharper, matching quality parity with the reference images.
+
+## TASK 8 — Re-verify Camera Clamp Bounds
+- 8.1 Recompute the camera's min/max clamp values using `village-sindhu.jpg`'s actual dimensions (1024×1536) against the CURRENT (post-Task 7) canvas/display size — a clamp calculated before the DPR fix may now be stale/incorrect
+- **Acceptance:** panning to the very top and very bottom of the village art shows correct edges with no blank space and no sudden jump/snap at the boundary.
+
+## TASK 9 — Full Regression + Feel Pass
+- 9.1 Confirm the earlier movement-fix's proximity triggers (buildings, NPCs) still work correctly with the new camera-anchor point (Task 5) — proximity checks should still use Aru's actual world position, not any rig-visual-only offset
+- 9.2 Re-run `verify:drain-puzzle` and `verify:village-reachability` (from the earlier PRD) — confirm neither regressed
+- 9.3 Manual feel-test: walk Aru around the full village, run with Shift, approach every building and NPC, compare against the reference images for both motion quality and visual sharpness
+- 9.4 Test on an actual mobile device (not just desktop dev-tools emulation) — DPR issues in particular can look fine on desktop but differ on real phone screens
+- **Acceptance:** demo-ready — Aru visibly walks/runs with limb motion, camera feels smooth and grounded, village art renders at full sharpness on both desktop and mobile.
+
+---
+
+## Build Order
+Task 0 (assets) → Task 1 (rig renderer) → Task 2 (phase wiring) → Task 3 (facing) → Task 4 (pixel rounding) → Task 5 (follow-anchor) → Task 6 (damping) → Task 7 (DPR/resolution) → Task 8 (clamp re-verify) → Task 9 (regression/feel)
+
+**Why this order:** the two bugs are independent (character rig vs. camera/rendering) and can technically be built in parallel by two people, but within each track, order matters — rig-renderer before phase-wiring, and pixel-rounding before damping (rounding too early breaks damping's math, per Task 6.2's note). Camera fixes (4–8) should land before the final regression pass (9) so the feel-test happens against the truly-fixed version, not an intermediate state.

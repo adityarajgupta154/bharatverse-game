@@ -7,6 +7,8 @@
     "initialState": "explored",
     "position": { "x": 505, "y": 1245 },
     "hotspot": { "w": 340, "h": 330 },
+    "anchorTile": { "row": 19, "col": 7 },
+    "interactionRadius": 2.5,
     "unlocksAfter": [],
     "routeTarget": "recap:sindhu-intro"
   },
@@ -18,6 +20,8 @@
     "initialState": "explored",
     "position": { "x": 165, "y": 730 },
     "hotspot": { "w": 300, "h": 320 },
+    "anchorTile": { "row": 11, "col": 5 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "explore:great-bath"
   },
@@ -29,6 +33,8 @@
     "initialState": "in_progress",
     "position": { "x": 520, "y": 250 },
     "hotspot": { "w": 280, "h": 290 },
+    "anchorTile": { "row": 6, "col": 7 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "explore:granary"
   },
@@ -40,6 +46,8 @@
     "initialState": "in_progress",
     "position": { "x": 512, "y": 700 },
     "hotspot": { "w": 240, "h": 230 },
+    "anchorTile": { "row": 10, "col": 7 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "explore:covered-drains"
   },
@@ -51,6 +59,8 @@
     "initialState": "in_progress",
     "position": { "x": 815, "y": 750 },
     "hotspot": { "w": 270, "h": 320 },
+    "anchorTile": { "row": 11, "col": 10 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "explore:bazaar"
   },
@@ -62,6 +72,8 @@
     "initialState": "story_mission",
     "position": { "x": 200, "y": 1085 },
     "hotspot": { "w": 270, "h": 310 },
+    "anchorTile": { "row": 16, "col": 5 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "minigame:drain-puzzle"
   },
@@ -73,6 +85,8 @@
     "initialState": "story_mission",
     "position": { "x": 800, "y": 1100 },
     "hotspot": { "w": 270, "h": 310 },
+    "anchorTile": { "row": 14, "col": 12 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [],
     "routeTarget": "builder:city-builder"
   },
@@ -84,6 +98,8 @@
     "initialState": "story_mission",
     "position": { "x": 780, "y": 385 },
     "hotspot": { "w": 270, "h": 260 },
+    "anchorTile": { "row": 5, "col": 10 },
+    "interactionRadius": 1.5,
     "unlocksAfter": [
       "vishaal-snanagar",
       "anaaj-bhandaar",

@@ -4,6 +4,7 @@ An Indian heritage exploration game for school students: players travel a painte
 
 ## Run & Operate
 
+- `pnpm --filter @workspace/bharatverse run dev` — run the main game frontend (the managed `artifacts/bharatverse: web` workflow supplies `PORT`/`BASE_PATH`; restart that workflow instead of running this by hand)
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
@@ -41,8 +42,11 @@ An Indian heritage exploration game for school students: players travel a painte
 ## Product
 
 - Memory Map Hub (`/`): 5 era-gates with states (explored / in progress / locked), left info panel with restoration ring, Smriti dialogue box, legend, Filter + Time Rift buttons.
-- Stub routes styled but placeholder: `/journal /passport /companions /heritage /settings /oracle /chapter/:nodeId`.
-- Phase 2 (COMPLETE, Tasks 0–9): inner "Village World" layer per Story/NPC PRD v4.1. Generic template: `src/components/world/NodeWorldScreen.tsx` (takes nodeId; route `/world/:nodeId`); per-node data in `src/game/worlds/<node-id>/{buildings,npcs}.json` + registry entry in `src/game/worlds/index.ts` (has a "how to add a new node world" guide + dev-time config validator). Climax building completion fires the hub region-restore. Dev helpers: `?debug` (hotspot outlines + dev-complete) and `?at=<worldY>`.
+- Time Rift (`/oracle`): painted full-scene screen — `rift-scene.jpg` is a native-res crop of the reference art (title/description/tagline/pill visuals baked; sr-only copies for screen readers). Live layer on top: `RiftInfoPanel` (opaque, exactly covers the baked panel so its numbers stay real; teal→green ring), transparent Wapas-Naksha hit-area link, LegendBar reuse. The portal is ALIVE: `rift-swirl.png` (painted swirl disc, feathered circular mask) spins over its static copy with a counter-rotating screen-blend layer + breathing purple glow (`rift-spin`/`rift-glow-pulse` keyframes in index.css, reduced-motion aware). Filter + Time Rift chrome are INERT art (`aria-current` marks the current screen). Pixel golden guards the crop-coupled layout (`tests/time-rift.spec.ts`, regen via `--update-snapshots`).
+- Stub routes styled but placeholder: `/journal /passport /companions /heritage /settings /chapter/:nodeId`.
+- Phase 2 (COMPLETE, Tasks 0–9): inner "Village World" layer per Story/NPC PRD v4.1. Generic template: `src/components/world/NodeWorldScreen.tsx` (takes nodeId; route `/world/:nodeId`); per-node data in `src/game/worlds/<node-id>/{buildings,npcs}.json` + registry entry in `src/game/worlds/index.ts` (has a "how to add a new node world" guide + dev-time config validator). Climax building completion fires the hub region-restore. Dev helpers: `?debug` (hotspot outlines + dev-complete), `?at=<worldY>` (pan worlds) and `?spawn=<x,y>` (walk worlds).
+- Village walking (sindhu-ghati): Aru walks the world with WASD/arrows + Shift-run (touch: joystick + E button); E opens the nearest building's card, walking near an NPC pops their voice bubble. Per-world opt-in via the `walk` config (tile mask + spawn) in `src/game/worlds/index.ts`; reachability enforced by `pnpm verify:village-walk`. Other worlds keep pan+click. Shift-run also works inside all 6 minigames.
+- Read-aloud ("Suno"): Smriti voices discovery cards (intro → sections → fun fact), the HUD dialogue box (hub + village — the frame art's speaker glyph is a real button), and BuildingCard invites/locked explanations. Discovery cards play PREGENERATED narration (one consistent storyteller voice on every device): mp3s at `src/assets/audio/narration/<contentId>.mp3`, auto-mapped by `src/lib/narrationAudio.ts` (drop a file = wired); generated with ElevenLabs voice "Niharika" (id `zJrRUu1KEcKH8qdpNaPJ`, settings stability 0.5 / similarity 0.75 / style 0.35 / speed 0.95) from the EXACT `discoveryNarration()` text so audio never drifts from screen copy — regenerate per new region the same way. Live Web Speech TTS (en-IN voice preferred — copy is romanized Hinglish) remains the fallback for missing files and voices the HUD/invites. Shared session (`claimVoiceSession` in `src/lib/speech.ts`) + `useSpeech` hook enforce one voice app-wide across BOTH engines; `verify:world-data` gates narration text and soft-warns on shipped cards missing audio; audio stops on card close/line change.
 
 ## User preferences
 
@@ -50,6 +54,14 @@ An Indian heritage exploration game for school students: players travel a painte
 - After each PRD task completes: report and ASK before starting the next task (first checkpoint = whole Hub screen, since Hub tasks 0–10 form one screen).
 - UI/UX must match the attached reference images pixel-close.
 - User mentioned a third "main unified PRD" (storyboards, string tables) that was never attached — may arrive later.
+
+## Validation & release checks
+
+- Registered validation commands: `typecheck` (`pnpm run typecheck`) and `solvability` (`pnpm --filter @workspace/bharatverse run verify:games`). Run both before releasing level/layout edits — a red `solvability` means a kid-facing puzzle became unwinnable or a village became unreachable.
+- The `verify:games` chain opens with `verify:world-data` — every region's authored JSONs (buildings/npcs/collision) are schema-parsed and cross-checked (dup ids, game↔building completion targets, anchors on walkable tiles) by the SAME validator the dev-time `defineWorld` guard uses (`src/game/world-validate.ts`). It then replays every minigame headlessly (the REAL scene `update()` driven by synthetic input, observed via each scene's `debugState()` seam), checks unlock rules, and BFS-verifies village walk reachability. The drain-puzzle harness also asserts guard rails: wrong-shape placement rejected, drop-and-repick, post-win freeze.
+- Adding a new scene: expose a `debugState()` seam, write `scripts/verify-<scene>.ts` that drives the real `update()` along a golden route (plus negative checks where they apply), and append it to the `verify:games` chain in `artifacts/bharatverse/package.json`.
+- Aru-rig visual goldens (`tests/aru-rig-shots.spec.ts`): `?rigfreeze=phase,blend,run,facing` (+`?spawn`) freezes the village scene in a fixed pose — no idle sway/patrols/camera easing — and the spec pixel-compares tight device-scale crops of Aru (idle, mid-stride, run, left-facing). Captures are byte-deterministic; after a DELIBERATE rig/art change regen via `--update-snapshots` and eyeball the new crops before committing.
+- Collision masks are authored visually, never by hand-editing strings: open `/dev/mask-editor?zoom=100` (DEV-only route), paint blocked/walkable tiles — live BFS instantly flags stranded tiles, unreachable building anchors, and out-of-range NPCs — then Copy JSON → paste into `src/game/worlds/<node>/village-collision.json` → run `solvability`. `walk.ts` is a thin loader over that JSON (`maskFromCollisionGrid`).
 
 ## Gotchas
 

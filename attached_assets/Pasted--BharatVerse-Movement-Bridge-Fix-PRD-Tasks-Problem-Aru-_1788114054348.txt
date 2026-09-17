@@ -1,0 +1,172 @@
+# BharatVerse — Movement Bridge Fix: PRD + Tasks
+**Problem:** Aru (aur NPCs) walk/run nahi karte Memory Map aur Village World screens par, jabki ek fully-working movement engine (input+collision+camera+loop) already Naali Paheli minigame mein prove ho chuka hai.
+**Source:** Uploaded technical analysis report (30 Aug 2026, full static analysis + engine deep-dive + runtime verification) — is PRD ka har decision us report ke findings pe directly based hai, kuch bhi dobara-guess nahi kiya gaya.
+**Target:** Claude Fable / Replit Agent ke liye directly buildable, Task 0 se sequential.
+
+---
+
+# PART A — PRD
+
+## A.1 Root Cause — Validated Summary
+Report ka core finding sahi aur precise hai: BharatVerse teen alag "duniya" (rendering approaches) ka collection hai —
+1. **Hub (Memory Map)** — static PNG, Aru art ke pixels mein baked. Movement architecturally impossible without redrawing art.
+2. **Village World** — static painting + DOM pan/scroll + click/hover hotspots. Aru render hi nahi hota — koi sprite element exist nahi karta.
+3. **Minigame (Canvas)** — asli engine: `input.ts` + `movement.ts` + `camera.ts` + `loop.ts` + `sprites.ts`, Naali Paheli mein fully verified (e2e tested + headless deterministic simulation).
+
+**Ye bug nahi hai, ek missing bridge hai.** Engine production-quality hai; wo sirf Village/Hub screens tak connect nahi kiya gaya.
+
+## A.2 Decision (locked, matches report's own recommendation)
+
+| Question | Decision | Why |
+|---|---|---|
+| Village World ko walkable banayen? | **Haan — Option A: existing canvas engine reuse karke** | Engine already proven hai; art change nahi karni; sirf collision-mask + proximity-triggers naya kaam hai |
+| DOM-based movement (CSS transform hack)? | **Reject** | Collision, camera, mobile perf sab messy ho jaayenge jab engine already ready baitha hai |
+| Hub (Memory Map) ko bhi walkable banayen? | **Reject** | Aru art mein baked hai — walkable banane ke liye poori art redraw + rework chahiye, jiska gameplay value bahut kam hai (ye conceptual overview map hai, RPG level nahi). Click-based hi rahega. |
+| True isometric engine rework (diamond tiles, depth-sort)? | **Reject** | Poori art + engine dobara banani padegi; painted art already premium isometric-*feel* deti hai bina isometric-engine ke — cost-benefit negative |
+| NPCs bhi move karein? | **Haan** | User ka explicit ask; existing engine collision-grid ke saath NPC patrol movement bhi consistent tarike se possible hai |
+| Run/Sprint add karein? | **Haan, chhota scope** | GAP #4 se confirmed — feature kahin nahi hai; Shift-modifier + speed multiplier, low effort |
+
+## A.3 Fix Architecture
+
+### A.3.1 New: `VillageScene` (canvas-based, replaces DOM pan/scroll)
+- Naya scene file, drain-puzzle-scene.ts jaisa hi pattern follow karega (same `Scene`/`GameDef` contract from `game/games/types.ts`)
+- Background: `village-sindhu.jpg` (1024×1536) canvas par draw hoga — **art change NAHI karni**, sirf render method badalta hai (DOM `<img>` → canvas draw)
+- Aru: `aru-sprite-cut.png` (already exists, abhi sirf minigames use karte hain) — isi scene mein pehli baar Village context mein render hoga, position state + `movement.ts`'s collision-aware moveActor se wired
+- Camera: `camera.ts` reuse, lekin vertical-follow priority (kyunki art tall hai, 1024×1536 — abhi ka manual scroll automatic ho jaayega)
+- Input: `input.ts` as-is — WASD/arrows/joystick, window-level listeners, koi naya input system nahi banana
+
+### A.3.2 New: Collision/Walkability Grid for Village
+- Engine already 64px square tiles use karta hai (GAP #5 confirmed: `x = col×64, y = row×64`) — village art 1024×1536 = **16 columns × 24 rows** tile grid
+- Ye grid data abhi exist nahi karta — **ye is fix ka sabse bada naya kaam hai**
+- Authoring approach: ek chhota **internal-only Tile Mask Editor** dev tool banayenge (canvas overlay grid, click-to-toggle walkable/blocked per cell, "Export JSON" button) — pixel-perfect mask hand-guess karne se kahin faster aur accurate
+- Output: `village-collision.json` — `{ cols: 16, rows: 24, tileSize: 64, blocked: [[row,col], ...] }` — same shape jo `drain-puzzle-scene.ts` ke grid se compatible ho
+
+### A.3.3 Interaction Model Change — Click/Hover → Proximity
+- **Buildings:** ab tak click-hotspot the (`NodeBuilding.tsx`). Naye model mein: har building ka ek anchor tile + interaction radius hota hai; Aru us radius ke andar aata hai → "E — Andar Jao" prompt dikhta hai (Naali Paheli ke pick-prompt pattern se hi copy) → E dabane pe wahi existing `BuildingCard`/minigame route khulta hai. **Downstream routing logic (kaunsa building kaunsa screen kholta hai) bilkul same rehta hai — sirf trigger mechanism click se proximity ban jaata hai.**
+- **NPCs:** ab tak hover/focus the (`NpcLayer.tsx`). Naye model mein: Aru NPC ke proximity radius mein aaye to dialogue bubble automatically trigger ho — matches natural exploration feel, aur mobile pe hover ka concept hi exist nahi karta, isliye ye mobile ko bhi better banata hai.
+
+### A.3.4 NPC Movement System
+- Har NPC ko ek chhota patrol state-machine milta hai: `idle (pause) → walk to next waypoint → idle (pause) → reverse` — same collision grid (A.3.2) respect karta hai taaki NPCs building/wall ke andar na ghuse
+- `npcs.json` schema extend hoga: existing `position`/`dialogueLines` ke saath ab `waypoints: [{row,col}, ...]` aur `pauseDurationMs` add honge — empty `waypoints` array = static NPC (kuch NPCs jaanbujhkar static reh sakte hain, jaise well ke paas baithi figure)
+- NPC movement Aru jitna complex nahi chahiye — koi diagonal-normalize/wall-slide ki zaroorat nahi, sirf simple grid-to-grid tile traversal, lekin **collision grid A.3.2 ko hi query karega** taaki ek hi source-of-truth rahe
+
+### A.3.5 Run/Sprint Addition
+- `input.ts` mein Shift-key (desktop) / joystick-edge-hold ya dedicated sprint-button (mobile) detect hoga
+- Ek naya constant `RUN_MULTIPLIER = 1.6` — jab sprint active ho, effective speed `PLAYER_SPEED × RUN_MULTIPLIER`
+- Ye change engine-level hone se **automatically Naali Paheli minigame mein bhi milega**, naye Village Scene mein bhi — dono jagah free
+- Stamina/dash mechanics NAHI add kar rahe (scope creep) — sirf simple hold-to-run
+
+### A.3.6 Reachability/Solvability Guard
+- Report mein already ek proven pattern hai: `scripts/verify-drain-puzzle.ts` headless simulation se prove karta hai ki puzzle completable hai
+- Wahi pattern reuse: naya `scripts/verify-village-reachability.ts` — spawn point se BFS/flood-fill chalake confirm karega ki **har building anchor tile aur har NPC ka har waypoint walkable-aur-reachable hai** — is script ke bina koi collision-mask-authoring session "done" nahi maana jaayega
+
+## A.4 What Stays Exactly The Same (no rework)
+- `village-sindhu.jpg` art — pixel-for-pixel unchanged
+- `hub-reference.png` art aur Hub ka click-based interaction model — unchanged (A.2 decision)
+- Building→screen routing logic (`routeTarget` wagoin) — unchanged, sirf trigger mechanism badalta hai
+- `input.ts`/`movement.ts`/`camera.ts`/`loop.ts`/`sprites.ts` — core engine unchanged, sirf ek naya consumer (VillageScene) is add hota hai, aur ek chhota Shift-run addition
+- Naali Paheli, City Builder demo — dono jaise chal rahe hain waise hi chalte rahenge
+
+## A.5 Risks & Fallback
+| Risk | Mitigation |
+|---|---|
+| Collision-mask authoring (16×24 grid, painterly irregular building shapes) time-consuming nikle | Tile Mask Editor tool (A.3.2) se ye kaam ghanton nahi, ek-do sitting mein ho sakta hai; fallback: rough rectangle-approximation per building bhi acceptable hai agar pixel-perfect na ho paaye |
+| VillageScene conversion deadline ke kareeb risky lage | Purana `NodeWorldScreen.tsx` (DOM pan/scroll) ko **delete nahi karna** — feature-flag ke peeche rakhna, taaki agar naya scene break ho to turant purane working version pe revert ho sake |
+| NPC patrol collision-grid ke against buggy nikle (NPC stuck/oscillate) | Simple state-machine, generous pause-timing, aur reachability script (A.3.6) NPC waypoints ko bhi validate karega |
+| Mobile joystick + sprint-button UI clutter | Sprint ko joystick-hold-past-threshold se trigger karna zyada clean hai bajaye ek alag button ke — decide karo dono option try karke jo better lage |
+
+---
+
+# PART B — BUILD TASKS (Task 0 onward)
+
+## TASK 0 — Schema & Architecture Lock
+- 0.1 Freeze `village-collision.json` shape: `{ cols:16, rows:24, tileSize:64, blocked: [[row,col],...] }`
+- 0.2 Extend `buildings.json` schema: add `anchorTile: {row,col}`, `interactionRadius: number (tiles)` — keep existing `position`/`state`/`routeTarget` fields as-is
+- 0.3 Extend `npcs.json` schema: add `waypoints: [{row,col},...]` (empty = static), `pauseDurationMs: number`, keep existing `dialogueLines`/`category`/`linkedBuildingId`
+- 0.4 Confirm `RUN_MULTIPLIER = 1.6` constant location: add to `game/engine/input.ts` or a shared `game/engine/constants.ts` if one should be created
+- **Acceptance:** all three schemas reviewed/approved; no component code touched yet.
+
+## TASK 1 — Tile Mask Editor (internal dev tool)
+- 1.1 New internal-only route (e.g. `/dev/mask-editor`, not linked from any player-facing nav) — loads `village-sindhu.jpg` as background, overlays a 16×24 grid at 64px tiles
+- 1.2 Click/tap a cell toggles walkable↔blocked, visually shaded (e.g. red overlay = blocked)
+- 1.3 "Export JSON" button outputs the `village-collision.json` shape from Task 0.1 (copy-to-clipboard or download)
+- 1.4 "Import JSON" to reload a previously-saved mask for continued editing
+- **Acceptance:** tool loads the real village art at correct scale, grid aligns visually with building footprints in the painting, export produces valid JSON matching the locked schema.
+
+## TASK 2 — Author the Real Village Collision Mask
+- 2.1 Using Task 1's tool, mark blocked cells for every building footprint, wall segment, and the two wells (per reference image) visible in `village-sindhu.jpg`
+- 2.2 Leave street/path areas walkable — this should roughly trace the cobblestone path pattern visible in the art
+- 2.3 Save output as the real `village-collision.json` in the worlds data folder
+- **Acceptance:** visually spot-check the exported mask against the source art — walkable areas should exactly follow the visible streets, no building interiors marked walkable.
+
+## TASK 3 — VillageScene Skeleton (canvas + camera, no interaction yet)
+- 3.1 New scene file (e.g. `game/games/village-scene.ts` or `game/worlds/sindhu-ghati/village-scene.ts`), implementing the same `Scene`/`GameDef` contract as `drain-puzzle-scene.ts` (reference that file directly for the exact interface shape)
+- 3.2 Draw `village-sindhu.jpg` as the scene's static background layer
+- 3.3 Wire `camera.ts` — vertical-priority follow (since art is taller than wide), clamped to art edges so camera never shows outside the painting
+- **Acceptance:** scene renders the full village painting on canvas, camera can be manually panned (temp test controls) without showing blank/out-of-bounds space.
+
+## TASK 4 — Aru Movement in VillageScene
+- 4.1 Load `aru-sprite-cut.png` via `sprites.ts`, same pattern as `drain-puzzle-scene.ts`'s Aru draw (reference lines 656–675 of that file for exact technique)
+- 4.2 Wire `input.ts` (WASD/arrows/joystick) → `movement.ts`'s collision-aware `moveActor`, querying Task 2's `village-collision.json` for walkability
+- 4.3 Camera (Task 3.3) now follows Aru's live position instead of manual test panning
+- **Acceptance:** Aru walks in all 4+diagonal directions via keyboard and mobile joystick, stops correctly at blocked tiles (doesn't clip through buildings/walls), camera follows smoothly.
+
+## TASK 5 — Building Proximity Interaction
+- 5.1 For each building in `buildings.json`, compute live distance from Aru's current tile to `anchorTile` — when within `interactionRadius`, show an "E — Andar Jao" prompt (reuse the exact visual style of Naali Paheli's existing pick-prompt UI)
+- 5.2 On E-press (or equivalent mobile action-button press) while in range: trigger the SAME existing routing logic that click used to trigger (`BuildingCard` modal / minigame launch / cutscene replay) — do not rewrite the routing logic itself, only its trigger source
+- 5.3 Locked buildings: prompt should not appear, or should show a distinct "locked" indicator instead of the action prompt — reuse existing locked-state visual language
+- **Acceptance:** walking Aru up to each of the 8 buildings correctly shows/hides the prompt at the right distance; pressing the action key launches the correct existing screen for every building; locked buildings behave correctly.
+
+## TASK 6 — NPC Rendering + Proximity Dialogue on Canvas
+- 6.1 Port NPC rendering from the old DOM-based `NpcLayer.tsx` into the new canvas scene — draw each NPC's sprite at its current position (from `npcs.json`, converted from percentage/tile coords consistently with the collision grid's coordinate system)
+- 6.2 Replace hover-trigger with proximity-trigger: dialogue bubble shows when Aru's distance to an NPC is within a small radius (tune this separately from building radius — should feel like "close enough to overhear," typically smaller than building interaction radius)
+- 6.3 Bubble rendering on canvas: either draw as a canvas overlay element or as a positioned DOM element tracking the NPC's canvas-to-screen projected coordinates (pick whichever is simpler given the existing `DialogueBubble.tsx` component — reuse its visual styling either way)
+- **Acceptance:** walking near each NPC correctly triggers/dismisses its dialogue bubble; bubble text and styling match the existing design language.
+
+## TASK 7 — NPC Patrol Movement
+- 7.1 Implement the simple patrol state-machine (A.3.4): `idle(pause) → walk-to-next-waypoint → idle(pause) → reverse-direction`, per-NPC, driven by that NPC's `waypoints` array from `npcs.json`
+- 7.2 NPC movement queries the SAME `village-collision.json` grid as Aru (Task 4.2) — NPCs must not walk through blocked tiles
+- 7.3 NPCs with an empty `waypoints` array remain static (idle animation only, no position change) — this is intentional for some NPCs (e.g. seated/working figures), not a bug
+- 7.4 Stagger each NPC's pause timing/start offset so multiple NPCs don't all move in visible unison
+- **Acceptance:** NPCs with waypoints visibly patrol back and forth along believable paths without clipping through buildings; static NPCs stay in place; movement doesn't look robotic/synchronized across NPCs.
+
+## TASK 8 — Run/Sprint Feature (Engine-Level)
+- 8.1 Add Shift-key detection to `input.ts`'s existing key-state tracking
+- 8.2 Add `RUN_MULTIPLIER` constant (Task 0.4) and apply it to effective speed wherever `PLAYER_SPEED` is currently used in movement calculations — this should touch `movement.ts` or wherever the speed is applied, in a way that benefits ALL consumers (drain-puzzle-scene, city-builder demo-scene, AND the new village-scene) without duplicating logic per-scene
+- 8.3 Mobile: add sprint activation via joystick-hold-past-threshold (recommended, per A.5) — test this against a simpler dedicated sprint-button alternative and pick whichever feels better
+- **Acceptance:** holding Shift (or mobile equivalent) visibly increases Aru's speed in the Village Scene AND in Naali Paheli, confirming the engine-level change propagated correctly to both consumers without per-scene duplication.
+
+## TASK 9 — Reachability/Solvability Guard Script
+- 9.1 New `scripts/verify-village-reachability.ts`, following the exact pattern of the existing `scripts/verify-drain-puzzle.ts`
+- 9.2 Headless flood-fill/BFS from the spawn tile across `village-collision.json`'s walkable cells
+- 9.3 Assert: every building's `anchorTile` (Task 0.2) is reachable; every NPC's every `waypoint` tile (Task 0.3) is reachable
+- 9.4 Wire this into the existing `verify:*` npm script pattern (`package.json`) so it can be run the same way as `verify:drain-puzzle`
+- **Acceptance:** script fails loudly with a clear error (which building/NPC/tile is unreachable) if Task 2's mask has a mistake; passes cleanly once the real mask (Task 2) is correct.
+
+## TASK 10 — Feature-Flag Safety Net & Cleanup
+- 10.1 Keep the old `NodeWorldScreen.tsx` (DOM pan/scroll) code path intact, gated behind a simple flag/config toggle rather than deleted — this is the fallback if the new VillageScene has unresolved issues close to a deadline
+- 10.2 Once the new VillageScene is confirmed stable (post Task 9), switch the default route to use it; keep the old path reachable via the flag for at least one more milestone before considering removal
+- **Acceptance:** flipping the flag cleanly switches between old and new implementations without other code changes; nothing was hard-deleted prematurely.
+
+## TASK 11 — Full Regression + QA Pass
+- 11.1 Re-run `verify:drain-puzzle` (existing) — confirm the run/sprint addition (Task 8) didn't break the existing verified puzzle behavior
+- 11.2 Run the new `verify:village-reachability` (Task 9) — must pass
+- 11.3 Manual playtest: enter Village World, walk to all 8 buildings via proximity (not click), trigger all NPC dialogues via proximity, use sprint, exit back to Hub — repeat 3–5 times checking for state desync or visual glitches
+- 11.4 Mobile-specific pass: joystick movement + sprint + proximity prompts all tested on an actual touch device or emulator, not just desktop
+- 11.5 Performance check: canvas now draws a large tall background + Aru + up to 8 buildings + 8–12 moving NPCs simultaneously every frame — profile on a mid-range/school-grade device specifically
+- **Acceptance:** demo-ready; no regressions in the minigame; Village World now genuinely walkable exactly like the minigame; mobile works; performance acceptable.
+
+---
+
+## Build Order Summary
+Task 0 (schema) → Task 1 (mask editor tool) → Task 2 (real mask data) → Task 3 (scene skeleton) → Task 4 (Aru movement) → Task 5 (building proximity) → Task 6 (NPC render+dialogue proximity) → Task 7 (NPC patrol movement) → Task 8 (run/sprint) → Task 9 (reachability guard) → Task 10 (feature flag/cleanup) → Task 11 (full QA)
+
+**Why this order:** collision data (Task 1–2) must exist before ANY movement can be meaningfully tested; Aru's own movement (Task 4) must work before building/NPC interactions are layered on top of it; run/sprint (Task 8) is deliberately late since it's an engine-wide multiplier best added once the base movement is already proven correct in the new scene; the reachability guard (Task 9) and QA (Task 11) close the loop, matching the same rigor the report found already present in Naali Paheli.
+
+---
+
+## Notes for Claude Fable / Replit Agent
+- Every task above references an EXISTING file/pattern to copy from (`drain-puzzle-scene.ts`, `verify-drain-puzzle.ts`, `NpcLayer.tsx`, `DialogueBubble.tsx`, the pick-prompt UI) — always open and read that reference file first before writing new code, don't reinvent patterns that already exist and work.
+- Do not modify `village-sindhu.jpg` or `hub-reference.png` — this entire fix is render/logic-layer only, zero art changes.
+- Do not touch the Hub (`MapStage.tsx`) as part of this fix — that's explicitly out of scope per A.2's locked decision.
+- Do not attempt true isometric projection math anywhere — explicitly rejected per A.2, out of scope.

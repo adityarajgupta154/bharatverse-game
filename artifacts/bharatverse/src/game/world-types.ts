@@ -40,6 +40,15 @@ export interface WorldBuilding {
   position: { x: number; y: number };
   /** Clickable zone size, world px. */
   hotspot: { w: number; h: number };
+  /**
+   * Canvas walk mode (Movement Bridge PRD Task 0.2): the walkable tile by
+   * this building's door. The E-prompt appears when Aru is within
+   * `interactionRadius` tiles of its center. The DOM walk fallback keeps
+   * using hotspot-rect distance (INTERACT_PAD) instead.
+   */
+  anchorTile?: { row: number; col: number };
+  /** E-prompt range around anchorTile, in tiles (1.5 = 96px). */
+  interactionRadius?: number;
   /** Building ids that must ALL be completed before this one unlocks. Empty = free-roam. */
   unlocksAfter: string[];
   /**
@@ -70,8 +79,49 @@ export interface WorldNpc {
   linkedBuildingId?: string;
   /** Reserved for future animated sprite NPCs (PRD §A.4.4 fallback: v1 ships baked-art static NPCs). */
   spriteId?: string;
-  /** Reserved for future walk-loops (unused in v1). */
-  waypoints?: { x: number; y: number }[];
+  /**
+   * Patrol route in collision-grid tiles (Movement Bridge PRD Task 0.3).
+   * The NPC walks home → each waypoint in order → reverse, pausing
+   * `pauseDurationMs` at the ends. Empty or absent = deliberately static
+   * (seated/working figures — most painted NPCs). Every waypoint tile must
+   * be walkable & reachable — enforced by scripts/verify-village-walk.ts.
+   */
+  waypoints?: { row: number; col: number }[];
+  /** How long a patrolling NPC idles at each end of its route (ms). */
+  pauseDurationMs?: number;
+}
+
+/**
+ * Optional walking layer for a world (Aru walks the painting instead of the
+ * player panning it). Purely data — the walk engine lives in world-walk.ts.
+ */
+export interface WorldWalkConfig {
+  /**
+   * Tile collision mask: one string per 64px row, one char per 64px column
+   * ('#' = blocked, '.' = walkable). Dimensions must match imageSize / 64.
+   */
+  mask: string[];
+  /** Aru's feet position on entering the world, world px. Must be walkable. */
+  spawn: { x: number; y: number };
+  /**
+   * NPC ids that are ALLOWED to be unreachable by walk-up proximity (voices
+   * from sealed buildings). Everyone else must be reachable — enforced by
+   * scripts/verify-village-walk.ts.
+   */
+  voiceExceptions?: string[];
+}
+
+/**
+ * Canonical authored collision data for a walkable world (Movement Bridge
+ * PRD Task 0.1) — the JSON that the /dev/mask-editor tool reads & writes.
+ * `blocked` lists [row, col] pairs; every other tile is walkable. Loaders
+ * expand it into a WorldWalkConfig mask via maskFromCollisionGrid().
+ */
+export interface WorldCollisionGrid {
+  cols: number;
+  rows: number;
+  tileSize: number;
+  blocked: [number, number][];
 }
 
 export interface WorldConfig {

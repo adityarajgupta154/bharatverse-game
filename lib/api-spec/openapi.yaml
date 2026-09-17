@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: sarvam
+    description: BharatVerse AI guide and Indian-language narration
 paths:
   /healthz:
     get:
@@ -24,6 +26,135 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /sarvam/guide:
+    post:
+      operationId: askSarvamGuide
+      tags: [sarvam]
+      summary: Ask the BharatVerse heritage guide
+      description: Returns a short, child-friendly answer grounded in BharatVerse content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SarvamGuideRequest"
+      responses:
+        "200":
+          description: Guide response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SarvamGuideResponse"
+        "400":
+          description: Invalid question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Request origin is not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many guide requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Sarvam AI is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /sarvam/speech:
+    post:
+      operationId: createSarvamSpeech
+      tags: [sarvam]
+      summary: Create Indian-language narration audio
+      description: Converts a short BharatVerse narration into natural Indian speech.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SarvamSpeechRequest"
+      responses:
+        "200":
+          description: Base64-encoded WAV narration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SarvamSpeechResponse"
+        "400":
+          description: Invalid narration text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Request origin is not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many narration requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Sarvam AI is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /sarvam/transcribe:
+    post:
+      operationId: transcribeSarvamAudio
+      tags: [sarvam]
+      summary: Transcribe a short spoken BharatVerse question
+      description: Converts a short, in-memory voice recording into a transcript for review before it is sent to the heritage guide.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SarvamTranscriptionRequest"
+      responses:
+        "200":
+          description: Reviewable speech transcript
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SarvamTranscriptionResponse"
+        "400":
+          description: Invalid audio recording
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Request origin is not allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "429":
+          description: Too many transcription requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Sarvam AI is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +164,84 @@ components:
           type: string
       required:
         - status
+    SarvamGuideRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        question:
+          type: string
+          minLength: 2
+          maxLength: 300
+      required:
+        - question
+    SarvamGuideResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        answer:
+          type: string
+        suggestions:
+          type: array
+          minItems: 2
+          maxItems: 3
+          items:
+            type: string
+      required:
+        - answer
+        - suggestions
+    SarvamSpeechRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 600
+      required:
+        - text
+    SarvamSpeechResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        audioBase64:
+          type: string
+        mimeType:
+          type: string
+          enum: [audio/wav]
+      required:
+        - audioBase64
+        - mimeType
+    SarvamTranscriptionRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        audioBase64:
+          type: string
+          minLength: 100
+          maxLength: 2400000
+          description: Short-lived base64 audio payload; never persisted by the server.
+        mimeType:
+          type: string
+          enum: [audio/webm, audio/ogg, audio/wav, audio/mp4, audio/mpeg]
+      required:
+        - audioBase64
+        - mimeType
+    SarvamTranscriptionResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        transcript:
+          type: string
+          minLength: 2
+          maxLength: 300
+      required:
+        - transcript
+    ApiError:
+      type: object
+      additionalProperties: false
+      properties:
+        error:
+          type: string
+      required:
+        - error
 

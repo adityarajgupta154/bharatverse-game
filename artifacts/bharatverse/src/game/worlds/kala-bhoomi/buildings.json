@@ -1,0 +1,24 @@
+[
+  {
+    "id": "bunkar-mandap",
+    "name": "Bunkar Mandap",
+    "subtitle": "The Weaver's Pavilion",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 785, "y": 255 },
+    "hotspot": { "w": 330, "h": 260 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:weaver-loom"
+  },
+  {
+    "id": "rangoli-rang",
+    "name": "Rangoli Rang",
+    "subtitle": "Colors of the Courtyard",
+    "type": "climax",
+    "initialState": "story_mission",
+    "position": { "x": 505, "y": 520 },
+    "hotspot": { "w": 320, "h": 240 },
+    "unlocksAfter": [],
+    "routeTarget": "climax:rangoli-rang"
+  }
+]

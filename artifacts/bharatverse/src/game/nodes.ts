@@ -1,5 +1,13 @@
 export type NodeStatus = 'explored' | 'in_progress' | 'locked';
 
+/**
+ * Map-legend filter categories: the three gate statuses plus the village
+ * layer's story-mission buildings (world-types BuildingState) — one legend
+ * chip per category. Hub gates only ever match the first three; the
+ * story_mission chip drives the village building layer.
+ */
+export type FilterCategory = NodeStatus | 'story_mission';
+
 export interface GameNode {
   id: string;
   label: string;
@@ -37,7 +45,7 @@ export const GAME_NODES: GameNode[] = [
     restorationPercent: 42,
     memoriesFound: 18,
     memoriesTotal: 42,
-    desc: 'Yah shahar apni unnath jal pranali, vyapar, kala aur yogya nagar yojana ke liye jaana jata tha.',
+    desc: 'Yah shahar apni unnati, jal pranali, vyapar, kala aur yogya nagar yojana ke liye jaana jata tha.',
     rewardName: 'Indus Script Mysteries',
     rewardPerks: ['+1 Memory Fragment', '+25 Resonance'],
     hotspot: { cx: 322, cy: 200, w: 200, h: 170 },
@@ -46,7 +54,7 @@ export const GAME_NODES: GameNode[] = [
   {
     id: 'magadha-kaal',
     label: 'Magadha Kaal',
-    subtitle: 'Coming Soon',
+    subtitle: 'Seat of Ancient Wisdom',
     eyebrow: 'Mahajanapada Yug',
     site: 'Rajgir–Pataliputra',
     dates: '600 BCE – 300 BCE',
@@ -57,7 +65,7 @@ export const GAME_NODES: GameNode[] = [
     desc: 'Mahajanapadon ka yug — Nalanda ke gyan aur Maurya shakti ki neev yahin padi.',
     rewardName: 'Lion Capital',
     rewardPerks: ['+1 Memory Fragment', '+20 Resonance'],
-    unlockHint: 'Sindhu Ghati 60% restore karke kholo',
+    unlockHint: 'Sindhu Ghati ke dono khel jeet kar kholo',
     hotspot: { cx: 752, cy: 195, w: 210, h: 170 },
     smritiLine: 'Gyan ki dharti par chalte hain.',
     smritiLockedLine: 'Yeh dwar abhi bandh hai, Aru. Pehle Sindhu Ghati aur yaadein lauta.',
@@ -118,6 +126,48 @@ export const GAME_NODES: GameNode[] = [
     smritiLockedLine: 'Yeh dwar abhi bandh hai, Aru. Kuch aur kshetra explore kar.',
   }
 ];
+
+/**
+ * Progression rules — the code form of each node's `unlockHint` copy.
+ * Applied at READ time (see store.tsx) so that old saves, which persist a
+ * node's `locked` status, unlock retroactively the moment their condition
+ * holds — no save migration needed. Conditions are a pure function of the
+ * persisted progress (other nodes + completed buildings).
+ *
+ * Every rule must be attainable through NORMAL play from a fresh save —
+ * scripts/verify-unlock-rules.ts asserts this progression chain.
+ */
+export function applyUnlockRules(
+  nodes: GameNode[],
+  completedBuildings: Record<string, string[]>
+): GameNode[] {
+  const byId = new Map(nodes.map(n => [n.id, n]));
+  const exploredCount = nodes.filter(n => n.status === 'explored').length;
+  const sindhuDone = new Set(completedBuildings['sindhu-ghati'] ?? []);
+  const isUnlocked = (id: string): boolean => {
+    switch (id) {
+      case 'magadha-kaal':
+        // "Sindhu Ghati ke dono khel jeet kar kholo" — winning both playable
+        // Sindhu games opens Magadha. (≥60% restoration also counts, for
+        // saves where the region got restored outright.)
+        return (
+          (sindhuDone.has('naali-paheli') && sindhuDone.has('sheher-banao')) ||
+          (byId.get('sindhu-ghati')?.restorationPercent ?? 0) >= 60
+        );
+      case 'kala-bhoomi': // "Apni Parampara poori karke kholo"
+        return (byId.get('apni-parampara')?.restorationPercent ?? 0) >= 100;
+      case 'khel-maidan': // "Koi bhi 2 kshetra explore karke kholo"
+        return exploredCount >= 2;
+      default:
+        return false;
+    }
+  };
+  return nodes.map(n =>
+    n.status === 'locked' && isUnlocked(n.id)
+      ? { ...n, status: 'in_progress' as NodeStatus }
+      : n
+  );
+}
 
 export interface PlayerState {
   name: string;

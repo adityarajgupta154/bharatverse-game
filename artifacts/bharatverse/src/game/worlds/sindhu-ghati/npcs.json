@@ -4,6 +4,11 @@
     "name": "Bora uthaye aadmi",
     "category": "ambient",
     "position": { "x": 372, "y": 272 },
+    "spriteId": "npc-sack-carrier",
+    "waypoints": [
+      { "row": 2, "col": 4 }
+    ],
+    "pauseDurationMs": 1600,
     "dialogueLines": [
       { "hi": "Anaaj bhandaar tak ek aur phera.", "en": "One more round to the granary." },
       { "hi": "Mehnat ka bojh bhi meetha lagta hai.", "en": "Even the weight of hard work feels sweet." }
@@ -48,6 +53,12 @@
     "category": "ambient",
     "position": { "x": 410, "y": 678 },
     "hotspot": { "w": 60, "h": 95 },
+    "spriteId": "npc-child",
+    "waypoints": [
+      { "row": 8, "col": 5 },
+      { "row": 8, "col": 11 }
+    ],
+    "pauseDurationMs": 1800,
     "dialogueLines": [
       { "hi": "Pakdo toh jaano!", "en": "Catch me if you can!" },
       { "hi": "Sabse tez main hoon!", "en": "I'm the fastest of all!" }
@@ -81,6 +92,11 @@
     "category": "ambient",
     "position": { "x": 447, "y": 746 },
     "hotspot": { "w": 75, "h": 60 },
+    "spriteId": "npc-dog",
+    "waypoints": [
+      { "row": 11, "col": 5 }
+    ],
+    "pauseDurationMs": 3000,
     "dialogueLines": [
       { "hi": "Bhau bhau!", "en": "Woof woof!" },
       { "hi": "Bhau! Kaun aaya?", "en": "Woof! Who's there?" }
@@ -113,6 +129,11 @@
     "name": "Dwar ka pehredaar",
     "category": "ambient",
     "position": { "x": 430, "y": 1375 },
+    "spriteId": "npc-gate-guard",
+    "waypoints": [
+      { "row": 21, "col": 4 }
+    ],
+    "pauseDurationMs": 3400,
     "dialogueLines": [
       { "hi": "Sheher ki raksha, hamara dharam.", "en": "Guarding the city is our duty." },
       { "hi": "Andar jao, par niyam yaad rakho.", "en": "Go in, but remember the rules." }

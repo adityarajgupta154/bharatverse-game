@@ -1,0 +1,19 @@
+[
+  {
+    "id": "dadi-kamla",
+    "name": "Dadi Kamla",
+    "category": "context",
+    "position": { "x": 365, "y": 780 },
+    "dialogueLines": [
+      {
+        "hi": "Beta, jyot toh jal rahi hai — par saare diye bujhe pade hain. Utsav kaise shuru ho?",
+        "en": "Child, the eternal flame is burning — but all the lamps sit unlit. How can the festival begin?"
+      },
+      {
+        "hi": "Har tyohar ek yaad hai, Aru — use roshan rakhna hamara kaam hai!",
+        "en": "Every festival is a memory, Aru — keeping it glowing is our job!"
+      }
+    ],
+    "linkedBuildingId": "diye-jalao"
+  }
+]

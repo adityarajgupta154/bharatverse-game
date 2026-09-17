@@ -42,6 +42,9 @@ function NpcHotspot({
   suppressRef,
   reducedMotion,
   scrollY,
+  proximityOpen,
+  positioned = true,
+  hoverable = true,
 }: {
   npc: WorldNpc;
   index: number;
@@ -49,6 +52,16 @@ function NpcHotspot({
   suppressRef: MutableRefObject<{ moved: boolean }>;
   reducedMotion: boolean;
   scrollY: number;
+  /** Walkable worlds: Aru is standing near this NPC (a fifth open source). */
+  proximityOpen: boolean;
+  /** false = patrol mover (Task 7): the host's loop-transformed wrapper
+   *  places the anchor, so skip the static left/top. Bubble clamp/flip math
+   *  still uses the authored HOME position — the two mover routes stay
+   *  mid-painting, where neither clamp nor flip ever engages. */
+  positioned?: boolean;
+  /** false = no mouse-hover source — a mover walks out from under a resting
+   *  cursor, which would strand the hover flag open. */
+  hoverable?: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -57,7 +70,7 @@ function NpcHotspot({
   const [lineIdx, setLineIdx] = useState(0);
   const pinTimer = useRef<number | null>(null);
 
-  const open = hovered || focused || pinnedOpen || ambientOpen;
+  const open = hovered || focused || pinnedOpen || ambientOpen || proximityOpen;
 
   // Advance to the next authored line exactly once per open→close cycle,
   // regardless of which sources opened/closed the bubble.
@@ -110,7 +123,7 @@ function NpcHotspot({
   return (
     <div
       className="absolute"
-      style={{ left: npc.position.x, top: npc.position.y }}
+      style={positioned ? { left: npc.position.x, top: npc.position.y } : undefined}
       data-npc-id={npc.id}
     >
       <button
@@ -126,7 +139,7 @@ function NpcHotspot({
           pinTimer.current = window.setTimeout(() => setPinnedOpen(false), PIN_MS);
         }}
         onPointerEnter={e => {
-          if (e.pointerType === 'mouse') setHovered(true);
+          if (hoverable && e.pointerType === 'mouse') setHovered(true);
         }}
         onPointerLeave={e => {
           if (e.pointerType === 'mouse') setHovered(false);
@@ -173,17 +186,57 @@ function NpcHotspot({
   );
 }
 
+/**
+ * Patrol-mover hotspot (Movement Bridge PRD Task 7): the SAME dialogue
+ * hotspot, minus static placement (the canvas host's loop-transformed
+ * wrapper carries the live position) and minus hover (the figure walks out
+ * from under a resting cursor). Tap-to-pin, keyboard focus, the ambient
+ * murmur cycle and the proximity voice source all behave exactly like the
+ * static villagers, with the same testid/aria contract.
+ */
+export function MoverNpcHotspot({
+  npc,
+  index,
+  debug,
+  suppressRef,
+  voiceOpen,
+}: {
+  npc: WorldNpc;
+  index: number;
+  debug?: boolean;
+  suppressRef: MutableRefObject<{ moved: boolean }>;
+  voiceOpen: boolean;
+}) {
+  const reducedMotion = useReducedMotion();
+  return (
+    <NpcHotspot
+      npc={npc}
+      index={index}
+      debug={debug}
+      suppressRef={suppressRef}
+      reducedMotion={reducedMotion}
+      scrollY={0}
+      proximityOpen={voiceOpen}
+      positioned={false}
+      hoverable={false}
+    />
+  );
+}
+
 /** Renders every NPC of a world's npcs.json — no per-node logic (PRD 4.2). */
 export function NpcLayer({
   npcs,
   debug,
   suppressRef,
   scrollY,
+  voiceNpcId,
 }: {
   npcs: WorldNpc[];
   debug?: boolean;
   suppressRef: MutableRefObject<{ moved: boolean }>;
   scrollY: number;
+  /** Walkable worlds: id of the NPC Aru stands near (proximity bubble), else null. */
+  voiceNpcId?: string | null;
 }) {
   const reducedMotion = useReducedMotion();
   return (
@@ -197,6 +250,7 @@ export function NpcLayer({
           suppressRef={suppressRef}
           reducedMotion={reducedMotion}
           scrollY={scrollY}
+          proximityOpen={voiceNpcId === npc.id}
         />
       ))}
     </>

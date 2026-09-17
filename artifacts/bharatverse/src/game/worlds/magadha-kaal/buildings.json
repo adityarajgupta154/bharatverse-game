@@ -1,0 +1,24 @@
+[
+  {
+    "id": "dharmaganja-pustakalaya",
+    "name": "Dharmaganja Pustakalaya",
+    "subtitle": "The Great Library",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 710, "y": 300 },
+    "hotspot": { "w": 280, "h": 340 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:nalanda-library"
+  },
+  {
+    "id": "pothi-khoj",
+    "name": "Pothi Khoj",
+    "subtitle": "The Manuscript Hunt",
+    "type": "climax",
+    "initialState": "story_mission",
+    "position": { "x": 410, "y": 545 },
+    "hotspot": { "w": 320, "h": 260 },
+    "unlocksAfter": [],
+    "routeTarget": "climax:pothi-khoj"
+  }
+]

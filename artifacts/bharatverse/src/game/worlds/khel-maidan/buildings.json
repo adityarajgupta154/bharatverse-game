@@ -1,0 +1,24 @@
+[
+  {
+    "id": "kushti-akhada",
+    "name": "Kushti Akhada",
+    "subtitle": "The Wrestling Pit",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 688, "y": 495 },
+    "hotspot": { "w": 300, "h": 220 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:wrestling-pit"
+  },
+  {
+    "id": "kho-kho-daud",
+    "name": "Kho-Kho Daud",
+    "subtitle": "The Pole Run",
+    "type": "climax",
+    "initialState": "story_mission",
+    "position": { "x": 390, "y": 620 },
+    "hotspot": { "w": 340, "h": 240 },
+    "unlocksAfter": [],
+    "routeTarget": "climax:kho-kho-daud"
+  }
+]

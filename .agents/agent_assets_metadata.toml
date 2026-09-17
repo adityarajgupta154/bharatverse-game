@@ -14,3 +14,169 @@ mtime_ms = 1788088884176
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:3d151a30-ecb4-4d1f-9ceb-0b51c2f41a48/1891d055-5d81-490d-a5ff-fa8ca1e3c70a/c6fb38f2-7f1b-4296-ba53-9ec224ee402d"
 storage_version_token = "1788088918689259"
 content_type = "image/jpeg"
+
+[[outputs]]
+id = "aLFaCsbJD0tQqLjsaHxyQ"
+uri = "file://reports/aru-movement-gap-report.html"
+type = "text"
+title = "Aru Movement Gap — Detailed Analysis Report"
+description = "File-by-file project analysis: Aru sirf minigame me kyu chalta hai, village/hub me kyu nahi — 5 exact gaps, engine anatomy, screen matrix, aur fix roadmap (Hinglish)."
+logical_id = "c8de23d6-423e-46f5-b2bd-760fc361059c"
+content_hash = "sha256:7ded1bd83f6f223c5fa8ae080a3d46a715a65e51153892b132c260f6a87525b9"
+size = 25186
+mtime_ms = 1788111995169
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/c8de23d6-423e-46f5-b2bd-760fc361059c/a3d434b4-c68a-457c-8df2-ee67d897a8f5"
+storage_version_token = "1788111997610724"
+content_type = "text/html"
+
+[[outputs]]
+id = "WYnKCp4ZegGosdJSosswm"
+uri = "file://attached_assets/generated_audio/smriti-covered-drains.mp3"
+type = "audio"
+title = "smriti covered-drains"
+description = "Text-to-speech audio: Is gali ke neeche chhupa hai ek anokha jaal — dhaki hui naaliyon ka. Duniya me aisa sabse pehle yahin bana! Har ghar se juda — Har ghar ka apna snanghar tha, aur uska paani chho…"
+logical_id = "bdc70a82-2fa6-4d1d-945b-dd3fbcc99ef3"
+
+[[outputs]]
+id = "nDHQM7BeEMqyR4waKEKaS"
+uri = "file://attached_assets/generated_audio/smriti-granary.mp3"
+type = "audio"
+title = "smriti granary"
+description = "Text-to-speech audio: Ooncha chabutara, moti deewarein — yeh tha sheher ka anaaj-ghar, poore Mohenjo-Daro ki rasoi ka bharosa. Anaaj ka kila — Gehun aur jau yahan jama hote the — fasal kam ho ya zyad…"
+logical_id = "a3ed05de-ff79-45c1-a789-27d69da03eb7"
+
+[[outputs]]
+id = "q5pnXnTtvlmh3N0fWXSJx"
+uri = "file://attached_assets/generated_audio/smriti-great-bath.mp3"
+type = "audio"
+title = "smriti great-bath"
+description = "Text-to-speech audio: Beech sheher me chamakta vishaal kund — duniya ka sabse purana sarvajanik snanagar. Iski yaad ab lautne wali hai… Kitna vishaal? Ek bade classroom se bhi bada kund — 12 meter la…"
+logical_id = "b664d108-7695-4f64-ab95-42f7c7a82290"
+
+[[outputs]]
+id = "38q3y30z5FziuI8HFic4L"
+uri = "file://attached_assets/generated_audio/smriti-bazaar.mp3"
+type = "audio"
+title = "smriti bazaar"
+description = "Text-to-speech audio: Shor, rang aur saudagar — bazaar me moti, tamba, kapaas sab bikta tha… aur saath me aati thin door desh ki kahaniyan. Mohar ka thappa — Har saudagar ki apni patthar ki mohar — u…"
+logical_id = "c11b8d1e-2cff-4476-aa5b-40c711549094"
+
+[[outputs]]
+id = "bDLNvRK1gCdA1l-yP4nbA"
+uri = "file://attached_assets/generated_audio/smriti-sindhu-intro.mp3"
+type = "audio"
+title = "smriti sindhu-intro"
+description = "Text-to-speech audio: Yaad karo, Aru — yeh safar shuru kaise hua tha… Rift ke paar — Chamakta rift Aru ko 4500 saal peechhe le gaya — samne thi Sindhu Ghati ki sabse badi nagari, Mohenjo-Daro! Smriti…"
+logical_id = "f96cbb71-9435-4258-993d-0f48c18cde8a"
+
+[[outputs]]
+id = "gLFmLkRLwShBwU_zkCwze"
+uri = "file://artifacts/bharatverse/src/assets/audio/narration/great-bath.mp3"
+type = "audio"
+title = "Smriti didi ki awaaz — Vishaal Snanagar card"
+description = "Niharika (kids-storyteller, Indian accent) — ab har device pe yahi ek warm voice discovery cards padhegi. Sun ke batao kaisi lagi!"
+logical_id = "4d7da903-58e4-4985-bb36-6cff15668a5f"
+content_hash = "sha256:7ceae7a33cce5988a78508e4d8139a865d7be2c67cba1044c8bb52710b5da566"
+size = 729382
+mtime_ms = 1788199425996
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/4d7da903-58e4-4985-bb36-6cff15668a5f/84919222-f190-4457-8fa3-a0de7694f5ff"
+storage_version_token = "1788199522672909"
+content_type = "audio/mpeg"
+
+[[outputs]]
+id = "v9v2kXLmkSreAoZJo3sdn"
+uri = "file://.local/outputs/BharatVerse-SIH-Technical-Approach.pptx"
+type = "slides"
+title = "BharatVerse — SIH Technical Approach (PPTX)"
+description = "Two-slide SIH presentation with a BharatVerse cover and the approved Technical Approach content."
+logical_id = "e672e8ff-7b9b-4db1-941c-7c3eb4cd5b7d"
+content_hash = "sha256:05c4369979f9084fe7dbc6008d18a27bfd5af166ad9286d11d08bdef60a49086"
+size = 893157
+mtime_ms = 1788459325523
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/e672e8ff-7b9b-4db1-941c-7c3eb4cd5b7d/179a4091-3bf1-4e35-9e80-8e1db8b42f66"
+storage_version_token = "1788459326364631"
+content_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+[[outputs]]
+id = "3nsh4E7XwjCPGsXHNMU58"
+uri = "file://.local/outputs/BharatVerse-SIH-3-Slide-Deck.pptx"
+type = "slides"
+title = "BharatVerse — SIH 3-Slide Deck (PPTX)"
+description = "Updated three-slide SIH presentation with the new Proposed Solution idea slide."
+logical_id = "168a1375-dcee-49e4-8b6e-0a2d455b12d3"
+content_hash = "sha256:a13c99e1ceda2739343dcbe4a55a8640235887c2c6e024b270ad5c758b17fc95"
+size = 1528130
+mtime_ms = 1788459502167
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/168a1375-dcee-49e4-8b6e-0a2d455b12d3/14f55e5f-0bef-4086-ad12-91f2fe114c5c"
+storage_version_token = "1788459502859879"
+content_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+[[outputs]]
+id = "AMybQyz0kxU7hnna0OdL7"
+uri = "file://.local/outputs/BharatVerse-Flow-Diagram.png"
+type = "image"
+title = "BharatVerse Flow Diagram (Simple)"
+description = "Updated PPT-ready flow: Smriti Didi AI now a simple text box — Bharat Map → Heritage Worlds → Smriti Didi AI → Mini-Games → Memory Restoration → Progress."
+logical_id = "0dcb8f03-7b2c-4355-b634-c86d078b3ae8"
+content_hash = "sha256:145c82854701ec62add01bf9d9992a81452ce22848ca5bad884f9793eb43d2ee"
+size = 52739
+mtime_ms = 1788465964062
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/0dcb8f03-7b2c-4355-b634-c86d078b3ae8/76830cd5-bda3-481f-adc3-fecc7be47270"
+storage_version_token = "1788465974555991"
+content_type = "image/png"
+
+[[outputs]]
+id = "hbYWo7TSPSwj1tsJVCj0F"
+uri = "file://.local/outputs/BharatVerse-System-Architecture.png"
+type = "image"
+title = "BharatVerse System Architecture (v3)"
+description = "New box design: white cards with colored outlines and circular icon badges overlapping the left edge — same BharatVerse workflow structure, fresh look."
+logical_id = "fbfebbb1-40b9-4637-835c-b4a92ec5c4da"
+content_hash = "sha256:6c268f3d9d9788ce481aa00da3304b3aacb5f68e4aaefa56d1e3b8fa89628708"
+size = 440832
+mtime_ms = 1788468940179
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/fbfebbb1-40b9-4637-835c-b4a92ec5c4da/3d5bd5a3-ac2a-4e23-af4f-133237c529e2"
+storage_version_token = "1788468950387040"
+content_type = "image/png"
+
+[[outputs]]
+id = "7XyEvo-hFtBqwaU002vvA"
+uri = "file://.local/outputs/BharatVerse-Technical-System-Architecture.png"
+type = "image"
+title = "BharatVerse Technical System Architecture"
+description = "Reference-style compact block flowchart showing student input, web app, core game engine, heritage learning path, Smriti Didi AI safety path, local save, and learning outcomes."
+logical_id = "a5ba551b-8ab4-4e01-9b1f-0b2c67655491"
+content_hash = "sha256:e9cdafdfabdfc8efce4cc8a6abf468af3c9f8ffc90b662f52da53ececb2b9cac"
+size = 208825
+mtime_ms = 1788505726601
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/a5ba551b-8ab4-4e01-9b1f-0b2c67655491/3baa9c1c-d697-45f6-9a0f-b4fa042963b1"
+storage_version_token = "1788505734746846"
+content_type = "image/png"
+
+[[outputs]]
+id = "fE8cDOM3PMhba28NQKle9"
+uri = "file://.local/outputs/BharatVerse-Risk-Assessment-Mitigation.png"
+type = "image"
+title = "BharatVerse — Risk Assessment and Mitigation"
+description = "PPT-ready high-resolution infographic with the three strongest Problem-to-Solution risk mitigation points."
+logical_id = "08482a13-e36f-4e2c-aaae-ff1e0cc44c68"
+content_hash = "sha256:91e5afb22fad6c46ee63402660ba7a3d779ea152bf97f39278642169e5670159"
+size = 896624
+mtime_ms = 1788508448979
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/08482a13-e36f-4e2c-aaae-ff1e0cc44c68/12d65526-b646-4dd6-8465-74b1a3dfe799"
+storage_version_token = "1788508458529969"
+content_type = "image/png"
+
+[[outputs]]
+id = "7qbEBY1n48S0STNDawBZ4"
+uri = "file://.local/outputs/BharatVerse-Impact-and-Benefits.png"
+type = "image"
+title = "BharatVerse Impact Infographic — Updated"
+description = "Updated PPT-ready graphic with only the IMPACT heading; subtitle and bottom branding text removed."
+logical_id = "b0795a7e-c866-49d4-9ecc-d8ae30a08bfa"
+content_hash = "sha256:2c665c8baf74c649dfdf63689442692d5bc60a78156b6a89c15e3c9d867490db"
+size = 950418
+mtime_ms = 1788514976808
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:263b58c8-9210-48e9-95b6-37950e43673c/b0795a7e-c866-49d4-9ecc-d8ae30a08bfa/77589e39-1c67-486f-a187-b0d39b0c68be"
+storage_version_token = "1788514985228564"
+content_type = "image/png"

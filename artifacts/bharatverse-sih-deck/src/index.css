@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-primary: var(--slide-primary);
+  --color-accent: var(--slide-accent);
+  --color-bg: var(--slide-bg);
+  --color-text: var(--slide-text);
+  --color-muted: var(--slide-muted);
+  --font-display: var(--font-display-family);
+  --font-body: var(--font-body-family);
+}
+
+:root {
+  --slide-primary: #0b70b9;
+  --slide-accent: #e44640;
+  --slide-bg: #f4f8fb;
+  --slide-text: #142332;
+  --slide-muted: #577080;
+  --font-display-family: 'Bree Serif', Georgia, serif;
+  --font-body-family: 'DM Sans', Arial, sans-serif;
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--slide-bg);
+  color: var(--slide-text);
+  font-family: var(--font-body-family);
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slide-viewer {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.paper-grid {
+  background-image:
+    linear-gradient(rgba(11, 112, 185, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 112, 185, 0.045) 1px, transparent 1px);
+  background-size: 3.75vw 3.75vw;
+}
+
+.hand-circle {
+  border: 0.28vw solid var(--slide-accent);
+  border-radius: 48% 53% 45% 50%;
+  transform: rotate(-4deg);
+}
+
+.hand-underline {
+  position: relative;
+}
+
+.hand-underline::after {
+  content: "";
+  position: absolute;
+  left: 2%;
+  right: 5%;
+  bottom: -0.55vw;
+  height: 0.28vw;
+  background: var(--slide-accent);
+  border-radius: 60%;
+  transform: rotate(-1.5deg);
+}

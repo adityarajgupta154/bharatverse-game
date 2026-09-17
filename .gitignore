@@ -28,6 +28,13 @@ node_modules
 !.vscode/extensions.json
 
 # misc
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
 /.sass-cache
 /connect.lock
 /coverage
@@ -35,6 +42,8 @@ node_modules
 npm-debug.log
 yarn-error.log
 testem.log
+/artifacts/*/playwright-report/
+/artifacts/*/test-results/
 /typings
 
 # System Files

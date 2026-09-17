@@ -1,0 +1,26 @@
+[
+  {
+    "id": "8d9a4d8a-79e0-4f45-9a3d-1b2c3d4e5f60",
+    "position": 1,
+    "filepath": "src/pages/slides/BharatVerseCover.tsx",
+    "title": "BHARATVERSE",
+    "description": "Restoring India's Lost Memories Through Play",
+    "speakerNotes": ""
+  },
+  {
+    "id": "0d35c7c5-3d7d-4f9c-8a1b-6c7d8e9f0123",
+    "position": 2,
+    "filepath": "src/pages/slides/TechnicalApproach.tsx",
+    "title": "TECHNICAL APPROACH",
+    "description": "Technologies, methodology, prototype, data, and quality approach",
+    "speakerNotes": ""
+  },
+  {
+    "id": "f2a6e9b1-2c4d-4a7e-8b90-5d6f7a8c9e10",
+    "position": 3,
+    "filepath": "src/pages/slides/ProposedSolution.tsx",
+    "title": "Proposed Solution",
+    "description": "BharatVerse idea, gameplay loop, heritage discovery, and child-friendly guidance",
+    "speakerNotes": ""
+  }
+]

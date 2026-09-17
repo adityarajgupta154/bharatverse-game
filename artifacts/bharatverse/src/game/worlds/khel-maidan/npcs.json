@@ -1,0 +1,19 @@
+[
+  {
+    "id": "guru-balram",
+    "name": "Guru Balram",
+    "category": "context",
+    "position": { "x": 850, "y": 745 },
+    "dialogueLines": [
+      {
+        "hi": "Daud me dum hai, bachche? Chamakte khambe tumhara intezaar kar rahe hain!",
+        "en": "Got speed in those legs, kid? The glowing poles are waiting for you!"
+      },
+      {
+        "hi": "Kho-kho, kabaddi, mallakhamb — yeh maidan hi hamari paathshala hai!",
+        "en": "Kho-kho, kabaddi, mallakhamb — this ground is our true school!"
+      }
+    ],
+    "linkedBuildingId": "kho-kho-daud"
+  }
+]

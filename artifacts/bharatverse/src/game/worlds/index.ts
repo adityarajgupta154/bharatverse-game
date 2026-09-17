@@ -1,14 +1,16 @@
-import type {
-  BuildingState,
-  WorldBuilding,
-  WorldConfig,
-  WorldNpc,
-} from '@/game/world-types';
-import { STAGE_W, STAGE_H } from '@/lib/stage';
-import { getGameForRouteTarget } from '@/game/games';
-import sindhuBuildings from './sindhu-ghati/buildings.json';
-import sindhuNpcs from './sindhu-ghati/npcs.json';
+import type { BuildingState, WorldBuilding, WorldConfig } from '@/game/world-types';
+import { validateWorldData, type WorldData } from '@/game/world-validate';
+import { WORLD_DATA as sindhuData } from './sindhu-ghati/config';
+import { WORLD_DATA as magadhaData } from './magadha-kaal/config';
+import { WORLD_DATA as kalaData } from './kala-bhoomi/config';
+import { WORLD_DATA as paramparaData } from './apni-parampara/config';
+import { WORLD_DATA as khelData } from './khel-maidan/config';
 import sindhuArt from '@/assets/images/village-sindhu.jpg';
+import sindhuWalkArt from '@/assets/images/village-sindhu-walk.jpg';
+import magadhaArt from '@/assets/images/village-magadha.jpg';
+import kalaArt from '@/assets/images/village-kala.jpg';
+import paramparaArt from '@/assets/images/village-parampara.jpg';
+import khelArt from '@/assets/images/village-khel.jpg';
 
 /**
  * World registry — the ONLY place that knows which node worlds exist.
@@ -18,98 +20,61 @@ import sindhuArt from '@/assets/images/village-sindhu.jpg';
  *    world px; height may exceed 592 → the screen pans vertically).
  * 2. Create `src/game/worlds/<node-id>/buildings.json` and `npcs.json`
  *    following the schemas in `world-types.ts` (coordinates in world px).
- * 3. Add one `defineWorld({...})` entry to `WORLDS` below.
+ * 3. Create `src/game/worlds/<node-id>/config.ts` exporting WORLD_DATA
+ *    (copy an existing region's — it shape-checks the JSONs at import, and
+ *    scripts/verify-world-data.ts auto-discovers it in CI).
+ * 4. Add one `defineWorld({...})` entry to `WORLDS` below.
  * That's it: `/world/<node-id>` renders it with the full engine — pan/drag,
  * building gating, NPC dialogue, transitions, and climax → hub restore.
  * (The hub-side node must also exist in `game/nodes.ts` and be unlocked,
  * or the entry gate will redirect to the Memory Map.)
  */
-export interface WorldEntry {
-  config: WorldConfig;
-  /** Resolved URL of the world painting (width 1024 world px = stage px). */
+export interface WorldEntry extends WorldData {
+  /**
+   * Resolved URL of the world painting (width 1024 world px = stage px).
+   * The only vite-asset field — everything else lives in the region's pure
+   * config.ts (walk mask/spawn, and walkRenderer: 'dom' | 'canvas', the
+   * Movement Bridge flag that Task 10 flips per world, URL-overridable via
+   * ?walk=canvas|dom).
+   */
   art: string;
+  /**
+   * Canvas walk-mode variant of the painting (Task 7): identical pixels
+   * except the patrol movers are cobble-patched out — their cut sprites
+   * render on top instead, so nobody is painted twice mid-walk. DOM mode
+   * keeps `art`, where those figures stay baked and static.
+   */
+  walkArt?: string;
 }
 
 /**
- * Dev-only authoring guard: catches config mistakes (typos, out-of-bounds
- * coordinates, dangling ids) the moment a world loads, instead of as silent
- * dead hotspots. Production skips this — shipped data has already passed.
+ * Dev authoring guard: the shared validator (world-validate.ts — same one
+ * scripts/verify-world-data.ts runs in CI over ALL regions) throws here the
+ * moment a world loads in dev, so config mistakes surface as a crash with a
+ * problem list instead of silent dead hotspots. Production skips this —
+ * shipped data has already passed CI; the JSON shape checks in each region's
+ * config.ts still run everywhere, at import.
  */
 function defineWorld(entry: WorldEntry): WorldEntry {
   if (!import.meta.env.DEV) return entry;
-  const { config } = entry;
-  const problems: string[] = [];
-  const where = `world "${config.nodeId}"`;
-
-  if (config.imageSize.w !== STAGE_W)
-    problems.push(`imageSize.w must be ${STAGE_W} (1:1 with stage px), got ${config.imageSize.w}`);
-  if (config.imageSize.h < STAGE_H)
-    problems.push(`imageSize.h ${config.imageSize.h} is shorter than the ${STAGE_H}px stage`);
-  if (!config.lines.welcome || !config.lines.locked)
-    problems.push('lines.welcome and lines.locked must be non-empty');
-
-  const buildingIds = new Set<string>();
-  for (const b of config.buildings) {
-    if (buildingIds.has(b.id)) problems.push(`duplicate building id "${b.id}"`);
-    buildingIds.add(b.id);
-    if (!/^(explore|minigame|builder|climax|recap):/.test(b.routeTarget))
-      problems.push(`building "${b.id}" routeTarget "${b.routeTarget}" has an unknown namespace`);
-    // A registered 2D game must declare THIS building as its completion
-    // target — otherwise winning would mark the wrong building complete.
-    const game = getGameForRouteTarget(b.routeTarget);
-    if (game && game.buildingId !== b.id)
-      problems.push(
-        `building "${b.id}" routeTarget "${b.routeTarget}" launches game "${game.id}", but that game declares buildingId "${game.buildingId}" — they must match`
-      );
-    if (!Number.isFinite(b.position.x) || !Number.isFinite(b.position.y))
-      problems.push(`building "${b.id}" position must be finite numbers`);
-    else if (b.position.x < 0 || b.position.x > STAGE_W || b.position.y < 0 || b.position.y > config.imageSize.h)
-      problems.push(`building "${b.id}" position is outside the painting`);
-  }
-  for (const b of config.buildings) {
-    for (const dep of b.unlocksAfter) {
-      if (!buildingIds.has(dep))
-        problems.push(`building "${b.id}" unlocksAfter unknown id "${dep}"`);
-    }
-  }
-  const climaxCount = config.buildings.filter(b => b.type === 'climax').length;
-  if (climaxCount !== 1)
-    problems.push(`exactly one climax building required (it fires the hub region-restore), got ${climaxCount}`);
-
-  const npcIds = new Set<string>();
-  for (const n of config.npcs) {
-    if (npcIds.has(n.id)) problems.push(`duplicate npc id "${n.id}"`);
-    npcIds.add(n.id);
-    if (n.dialogueLines.length === 0) problems.push(`npc "${n.id}" has no dialogue lines`);
-    if (n.linkedBuildingId && !buildingIds.has(n.linkedBuildingId))
-      problems.push(`npc "${n.id}" links unknown building "${n.linkedBuildingId}"`);
-    if (!Number.isFinite(n.position.x) || !Number.isFinite(n.position.y))
-      problems.push(`npc "${n.id}" position must be finite numbers`);
-    else if (n.position.x < 0 || n.position.x > STAGE_W || n.position.y < 0 || n.position.y > config.imageSize.h)
-      problems.push(`npc "${n.id}" position is outside the painting`);
-  }
-
+  const problems = validateWorldData(entry);
   if (problems.length > 0)
-    throw new Error(`Invalid ${where} config:\n- ${problems.join('\n- ')}`);
+    throw new Error(
+      `Invalid world "${entry.config.nodeId}" config:\n- ${problems.join('\n- ')}`
+    );
   return entry;
 }
 
 const WORLDS: Record<string, WorldEntry> = {
   // NOTE: each key MUST equal its config.nodeId (guard below) — a mismatch
   // would silently load another node's progress under this route.
-  'sindhu-ghati': defineWorld({
-    art: sindhuArt,
-    config: {
-      nodeId: 'sindhu-ghati',
-      imageSize: { w: 1024, h: 1536 },
-      lines: {
-        welcome: 'Duniya ke pehle planned sheher me swagat hai.',
-        locked: 'Yeh dwar abhi bandh hai, Aru. Pehle baaki yaadein lauta.',
-      },
-      buildings: sindhuBuildings as unknown as WorldBuilding[],
-      npcs: sindhuNpcs as unknown as WorldNpc[],
-    },
-  }),
+  'sindhu-ghati': defineWorld({ art: sindhuArt, walkArt: sindhuWalkArt, ...sindhuData }),
+  // The four remaining regions each ship one playable finale: their climax
+  // building IS the minigame, so winning it restores the whole map node.
+  'magadha-kaal': defineWorld({ art: magadhaArt, ...magadhaData }),
+  'kala-bhoomi': defineWorld({ art: kalaArt, ...kalaData }),
+  'apni-parampara': defineWorld({ art: paramparaArt, ...paramparaData }),
+  'khel-maidan': defineWorld({ art: khelArt, ...khelData }),
 };
 
 if (import.meta.env.DEV) {

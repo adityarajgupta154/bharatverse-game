@@ -37,5 +37,7 @@ export interface GameDef {
   winLine: string;
   /** name -> src; all are loaded before the scene is created. */
   imageSrcs: Record<string, string>;
+  /** True while the game still runs the Task-0 placeholder scene. */
+  demo?: boolean;
   createScene(images: Record<string, HTMLImageElement>): Scene;
 }

@@ -1,0 +1,28 @@
+kind = "slides"
+previewPath = "/bharatverse-sih-deck/"
+title = "BharatVerse — SIH Technical Approach"
+description = "A Smart India Hackathon presentation slide deck for BharatVerse, an interactive Indian heritage exploration game with validated heritage data, mini-games, and a child-friendly AI guide."
+version = "1.0.0"
+id = "artifacts/bharatverse-sih-deck"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/bharatverse-sih-deck/" ]
+localPort = 19955
+
+[services.development]
+run = "pnpm --filter @workspace/bharatverse-sih-deck run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/bharatverse-sih-deck", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/bharatverse-sih-deck/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19955"
+BASE_PATH = "/bharatverse-sih-deck/"

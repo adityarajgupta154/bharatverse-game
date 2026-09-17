@@ -1,0 +1,24 @@
+[
+  {
+    "id": "utsav-ghanti",
+    "name": "Utsav Ghanti",
+    "subtitle": "The Festival Bell",
+    "type": "explore",
+    "initialState": "in_progress",
+    "position": { "x": 210, "y": 160 },
+    "hotspot": { "w": 260, "h": 240 },
+    "unlocksAfter": [],
+    "routeTarget": "explore:festival-bell"
+  },
+  {
+    "id": "diye-jalao",
+    "name": "Diye Jalao",
+    "subtitle": "Light the Lamps",
+    "type": "climax",
+    "initialState": "story_mission",
+    "position": { "x": 510, "y": 500 },
+    "hotspot": { "w": 320, "h": 280 },
+    "unlocksAfter": [],
+    "routeTarget": "climax:diye-jalao"
+  }
+]

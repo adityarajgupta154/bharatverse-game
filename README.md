@@ -1,255 +1,261 @@
 <div align="center">
 
-# 🛕 BharatVerse — Restore the Lost Memories
+# BharatVerse
 
-**An interactive Indian-heritage exploration game for school students.**
+### Discover, Play and Restore India's Heritage
 
-A mysterious **Time Rift** has stolen India's memories. Travel with **Aru** — a curious student — and **Smriti**, the spirit of memory, into hand-painted historical worlds. Walk their streets, meet their people, solve their puzzles, and earn back the lost chapters of history.
+A browser-based heritage learning game for school students, built for Smart India Hackathon 2026.
 
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&labelColor=20232a)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white&labelColor=20232a)
-![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white&labelColor=20232a)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white&labelColor=20232a)
-![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?logo=pnpm&logoColor=white&labelColor=20232a)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white&labelColor=20232a)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-workspace-F69220?logo=pnpm&logoColor=white)
 
-> *Wonder, not lecture: every fact is discovered by walking through a living world, talking to villagers, and solving puzzles — never by reading a wall of text.*
+![BharatVerse Memory Map](docs/screenshots/hub-map.jpg)
 
-![The Memory Map — hand-painted hub of Indian civilizations](docs/screenshots/hub-map.jpg)
+**Team Beyonders · SIH26208 · Toys & Games · Software**
 
 </div>
 
----
+## About the project
 
-## 📖 Table of Contents
+BharatVerse helps children explore Indian history, art, festivals and traditional sports through stories and playable activities. Instead of only reading about a place or tradition, students meet characters, solve related challenges and restore lost memories on a heritage map.
 
-- [The Story](#-the-story)
-- [How the Game Works](#-how-the-game-works)
-- [Screenshots](#-screenshots)
-- [Feature Highlights](#-feature-highlights)
-- [Architecture](#-architecture)
-  - [Monorepo layout](#monorepo-layout-pnpm-workspaces)
-  - [How the pieces connect](#how-the-pieces-connect)
-  - [The stage system](#the-stage-system-art-first-rendering)
-  - [The world engine](#the-world-engine-config-driven-worlds)
-  - [The NPC engine](#the-npc-engine)
-  - [Rift transitions](#rift-transitions)
-  - [Progress & persistence](#progress--persistence)
-- [Project Structure](#-project-structure)
-- [Getting Started](#-getting-started)
-- [Dev Helpers](#-dev-helpers)
-- [Design Principles](#-design-principles)
-- [Roadmap](#-roadmap)
+A Time Rift has scattered India's memories. The player joins Aru, a curious student, and Smriti, the spirit of memory, to recover them. The adventure follows three steps:
 
----
+1. **Discover** a place, character or cultural story.
+2. **Play** an activity connected to what you have learned.
+3. **Restore** a memory and continue exploring the map.
 
-## 🌏 The Story
+This is a working prototype, not a finished curriculum product. Some discoveries and endings are still in development; the AI Guide is a controlled preview feature.
 
-India's collective memory is fading — a **Time Rift** has scattered it across the ages. Aru, an ordinary school student, discovers he can step *into* the Memory Map: a living, painted atlas of Indian civilizations. Guided by **Smriti** (memory personified), he must restore each era — the Indus Valley, Magadha, and beyond — by exploring its places, listening to its people, and proving he understands how they lived.
+## Contents
 
-Every restored memory lights up the map. Restore them all, and history itself is saved.
+- [Current experience](#current-experience)
+- [Screenshots](#screenshots)
+- [Technology](#technology)
+- [Architecture](#architecture)
+- [Getting started](#getting-started)
+- [Optional API and AI Guide](#optional-api-and-ai-guide)
+- [Checks and tests](#checks-and-tests)
+- [Project structure](#project-structure)
+- [Limitations and roadmap](#limitations-and-roadmap)
+- [Contributing and content review](#contributing-and-content-review)
 
-## 🎮 How the Game Works
+## Current experience
 
-The game is built in **two nested layers**, both rendered as interactive paintings:
+The prototype contains **five registered heritage worlds, 13 story NPCs in Sindhu Ghati, and six playable mini-games**. Registered worlds are not all equally complete.
 
-### Layer 1 — The Memory Map (hub)
-
-The home screen is a hand-painted map with **five era nodes**. Each node shows its **Memory Restoration %**, memories found, and the next reward. A pinned chapter panel (left), Smriti's dialogue bar (bottom), a state legend, era filters, and the **Time Rift** button complete the HUD. Restoring a region fires a golden pulse across the map — visible proof that a piece of history is back.
-
-### Layer 2 — Node worlds (the village layer)
-
-Entering a node through the rift lands you **inside** that era: a tall painted world that you pan vertically (wheel, drag, or arrow keys). Everything in the painting is real gameplay — for the Indus Valley (Mohenjo-daro) world:
-
-| Building | Role | Stage |
+| World | Theme | Playable activities |
 | --- | --- | --- |
-| **Sheher ka Dwaar** (City Gate) | Node intro & recap | `recap` |
-| **Vishaal Snanagar** (The Great Bath) | Discovery panels | `explore` |
-| **Anaaj Bhandaar** (The Great Granary) | Discovery panels | `explore` |
-| **Dhaki Naaliyan** (Street of Covered Drains) | Discovery panels | `explore` |
-| **Bazaar** (Market street) | Discovery panels | `explore` |
-| **Naali Paheli** (Drain Puzzle) | Minigame — *"Save the City"* | `minigame` |
-| **Sheher Banao** (City Builder) | Builder — plan a mohalla, survive the flood | `builder` |
-| **Aakhri Raaz** (House of Mysteries) | Node climax — restores the region | `climax` |
+| Sindhu Ghati | Indus Valley city life and planning | **Naali Paheli** — drainage puzzle; **Sheher Banao** — city builder |
+| Magadha Kaal | Ancient Magadha and learning | **Pothi Khoj** |
+| Kala Bhoomi | Traditional arts and patterns | **Rangoli Rang** |
+| Apni Parampara | Festivals and traditions | **Diye Jalao** |
+| Khel Maidan | Indigenous sports | **Kho-Kho Daud** |
 
-- **Free-roam with one gate.** Visit buildings in any order; only **Aakhri Raaz** stays locked until the others are done. Completing it restores the whole region on the Memory Map.
-- **Living NPCs.** Villagers speak when hovered/tapped (Hindi dialogue bubbles), and ambient villagers murmur on their own in a staggered cycle — the streets feel alive without covering the art.
-- **Rift transitions.** Entering/leaving a world plays a purple rift veil blooming from the exact gate you clicked; `prefers-reduced-motion` users navigate instantly instead.
+Other implemented elements include:
 
-## 🖼️ Screenshots
+- An illustrated Memory Map with restoration progress and region navigation.
+- Building hotspots, story cards and character dialogue.
+- Sindhu Ghati walk-mode infrastructure; other regions use pan-and-click exploration.
+- Custom Canvas 2D mini-games with progress and completion handling.
+- Rift transitions and reduced-motion handling.
+- Keyboard and touch controls where supported by each activity.
+- Browser speech narration, plus optional server-backed guide and speech features.
+- Versioned, browser-local progress saves.
+- Configuration validation and headless game-solvability checks.
 
-| Village entrance | The Great Granary | Bazaar street |
+## Screenshots
+
+| Village entrance | Granary | Bazaar |
 | --- | --- | --- |
-| ![City gate](docs/screenshots/village-gate.jpg) | ![Granary](docs/screenshots/village-granary.jpg) | ![Bazaar](docs/screenshots/village-bazaar.jpg) |
+| ![Village entrance](docs/screenshots/village-gate.jpg) | ![Granary](docs/screenshots/village-granary.jpg) | ![Bazaar](docs/screenshots/village-bazaar.jpg) |
 
-*(Hero image above: the Memory Map hub with the Mohenjo-daro chapter pinned.)*
+These screenshots illustrate the map and village artwork; individual screens may evolve as the prototype develops.
 
-## ✨ Feature Highlights
+## Technology
 
-- 🎨 **Pixel-faithful painted worlds** — the illustrations *are* the game board; UI is measured against them 1:1
-- 🏘️ **A generic, config-driven world engine** — new eras are two JSON files + one painting, zero screen code
-- 🗣️ **13 living NPCs** with hover/tap/keyboard dialogue and self-paced ambient chatter
-- 🔓 **Free-roam progression** with derived building states and a single climax gate per world
-- 🌀 **Cinematic rift transitions** with a cross-navigation handshake and reduced-motion fallbacks
-- 💾 **Versioned, delta-only saves** in `localStorage` — content updates can never corrupt old progress
-- ♿ **Accessible by default** — full keyboard paths, `role="status"` live regions, stable Hindi `aria-label`s
-- 🧪 **Dev-time config validation** that fails loudly on authoring mistakes (dangling ids, out-of-bounds hotspots…)
+| Area | Implementation |
+| --- | --- |
+| Frontend | React 19, TypeScript, Vite 7 |
+| Styling | Tailwind CSS 4, CSS, reusable UI components |
+| Routing | Wouter |
+| Game rendering | Custom HTML5 Canvas 2D scenes and React overlays |
+| Content | Bundled JSON and TypeScript registries |
+| Player progress | Browser `localStorage` |
+| API | Node.js, Express 5, request validation |
+| Optional language services | Sarvam API through server-side endpoints |
+| Browser audio | Web Speech API and MediaRecorder |
+| Validation | TypeScript, headless scene checks, Playwright |
+| Workspace | pnpm monorepo |
 
-## 🏗️ Architecture
+**Phaser is not used.** The core game does not require a database. Database-related workspace scaffolding exists, but player progress is not stored in PostgreSQL or synced to a server.
 
-### Monorepo layout (pnpm workspaces)
-
-```
-├── artifacts/
-│   ├── bharatverse/        # The game — React + Vite web app (main artifact)
-│   ├── api-server/         # Express API server (future backend features)
-│   └── mockup-sandbox/     # Dev-only isolated component preview server
-├── attached_assets/        # PRDs + reference paintings (design source of truth)
-├── docs/screenshots/       # README imagery
-└── replit.md               # Working agreements & architecture notes
-```
-
-**Stack:** React 18 + TypeScript + Vite · wouter (routing) · Tailwind CSS · TanStack Query · Express.
-
-### How the pieces connect
+## Architecture
 
 ```mermaid
-graph TD
-    A["App.tsx — wouter routes"] --> B["Memory Map hub (/)"]
-    A --> C["NodeWorldScreen (/world/:nodeId)"]
-    B -->|"Time Rift + node gate"| C
-    C --> D["Worlds registry — defineWorld() + dev validator"]
-    D --> E["sindhu-ghati/buildings.json"]
-    D --> F["sindhu-ghati/npcs.json"]
-    C --> G["NpcLayer — dialogue bubbles"]
-    C --> H["BuildingCard — recap / explore / minigame / builder / climax"]
-    H -->|"climax completed"| I["restoreNode() → golden pulse on the map"]
-    B --> J["GameProvider — versioned localStorage deltas"]
-    C --> J
+flowchart TD
+    Player["Player's browser"] --> App["React app and Wouter routes"]
+    App --> Map["Memory Map"]
+    App --> World["World exploration and story cards"]
+    World --> Content["Bundled world, NPC and story data"]
+    World --> Games["Custom Canvas 2D mini-games"]
+    Map <--> Save["Versioned localStorage progress"]
+    World <--> Save
+    Games --> Save
+    App --> Guide["Optional Smriti Didi interface"]
+    Guide --> API["Express /api/sarvam endpoints"]
+    API --> Guard["Origin checks, validation, limits and safety filters"]
+    Guard --> Sarvam["Sarvam language and speech services"]
+    Guard --> Reviewed["Reviewed answer catalogue"]
 ```
 
-### The stage system (art-first rendering)
+### Rendering and content
 
-The entire game renders on a **fixed 1024×592 logical stage** that scales uniformly to the viewport (`StageLayout`, constants in `src/lib/stage.ts`). Reference paintings are shown 1:1 in stage pixels; interactive elements are **invisible hotspots positioned in world coordinates** on top of the art. This is what keeps the game pixel-faithful to the reference illustrations — and it means a designer can point at any pixel of the painting and say "that should do something," and it can.
+The interface uses a fixed logical stage that scales to the viewport. World art forms the backdrop, with interactive hotspots placed in world coordinates. Mini-games use a shared scene framework rather than a third-party game engine.
 
-The village painting is 1024×1536 world-px; the screen pans vertically through it (scroll range 0–944) with wheel, drag, and keyboard, all easing through the same scroll model.
+World definitions, building positions, NPC dialogue and unlock rules are data-driven. New content still needs validation, appropriate artwork and testing; registering a world alone does not make all its activities complete.
 
-### The world engine (config-driven worlds)
+### Progress
 
-`NodeWorldScreen` is a **generic template**: it receives a `nodeId` (route `/world/:nodeId`) and renders that node's world entirely from the registry. **Adding a new era world requires zero screen-code changes:**
+The browser saves versioned player-progress deltas instead of copying entire world definitions. Unlock states are derived from current content and completion data.
 
-1. Drop the world painting in `src/assets/images/` (width 1024 world-px; any height — the screen pans).
-2. Create `src/game/worlds/<node-id>/buildings.json` and `npcs.json` following `world-types.ts`.
-3. Add one `defineWorld({...})` entry to the registry in `src/game/worlds/index.ts`.
+Progress belongs to the browser and device where it was created. Clearing site data can erase it; cross-device accounts and cloud saves are not implemented.
 
-A building entry is pure data — position, art crop, gating, and copy:
+## Getting started
 
-```jsonc
-{
-  "id": "aakhri-raaz",
-  "name": "Aakhri Raaz",
-  "nameEn": "House of Mysteries",
-  "position": { "x": 512, "y": 1180 },      // world-px on the painting
-  "routeTarget": "climax:mystery-ending",    // namespaced stage to launch
-  "initialState": "story-mission",
-  "unlocksAfter": ["great-bath", "granary", "covered-drains", "bazaar", "drain-puzzle"]
-}
-```
+### Requirements
 
-A **dev-only validator** fails loudly at load if a config has mistakes — out-of-bounds coordinates, dangling `unlocksAfter` ids, duplicate ids, a missing (or second) climax, a registry key that doesn't match the config's `nodeId` — so authoring errors can never ship as silent dead hotspots.
+- **Node.js 20.19+ or 22.12+** (compatible with Vite 7).
+- **pnpm 10**; the current workspace has been used with pnpm 10.26.
+- A modern browser. Landscape or desktop viewing is recommended.
+- Repository access if the GitHub repository is private.
 
-**Building states are derived, never stored:** `completed → explored`, else `unmet unlocksAfter → locked`, else the authored initial state. Completing a world's single `climax` building fires the hub's region-restore.
+Use pnpm, not npm or Yarn: workspace dependencies and the lockfile rely on it.
 
-### The NPC engine
-
-Bubble visibility is **source-aware**: hover, keyboard focus, tap-pin, and the ambient auto-speak cycle each own an independent flag, and a bubble shows while *any* is active — so the ambient timer can never dismiss a bubble the player is reading. Details that matter:
-
-- Ambient villagers speak **one at a time** (stagger > bubble open duration) — a murmur, not a chorus.
-- Keyboard accessible: hotspots are focusable buttons with stable Hindi `aria-label`s; transient dialogue renders in a `role="status"` live region; `:focus-visible` gating stops mouse clicks from sticking bubbles open.
-- Bubbles clamp to the canvas near edges and flip below the speaker near the top of the view, so the nav bar never covers them.
-
-### Rift transitions
-
-A `sessionStorage` handshake (`bv-rift-veil`: destination + expiry) coordinates the two halves of a transition across navigation — the out-veil on the screen you leave, the in-reveal on the screen you enter. Veils render through a **portal to `document.body`**: the scaled stage creates a stacking context that would otherwise trap any overlay beneath the fixed nav.
-
-### Progress & persistence
-
-Progress (restoration %, memories, completed buildings) persists in `localStorage` under a **versioned schema** (`SCHEMA_VERSION`), and only player *deltas* are saved — never whole config-driven objects — so content updates can't corrupt old saves. Unknown ids in an old save are ignored instead of crashing the new UI.
-
-## 🗂️ Project Structure
-
-```
-src/ (inside artifacts/bharatverse)
-├── components/
-│   ├── hub/          # Memory Map: MapStage, InfoPanel, SmritiDialogue,
-│   │                 #   LegendBar, RightControls, StageLayout, TopNav
-│   ├── world/        # Village layer: NodeWorldScreen, NodeBuilding,
-│   │                 #   BuildingCard, NpcLayer, DialogueBubble, RiftTransition
-│   └── ui/           # shadcn/ui primitives
-├── game/
-│   ├── store.tsx     # Global state + versioned localStorage persistence
-│   ├── nodes.ts      # Hub node data (eras, positions, restoration state)
-│   ├── world-types.ts# WorldConfig / WorldBuilding / WorldNpc schemas
-│   └── worlds/
-│       ├── index.ts  # World registry + dev-time config validator + how-to guide
-│       └── sindhu-ghati/
-│           ├── buildings.json   # 8 buildings: type, position, gating, copy
-│           └── npcs.json        # 13 NPCs: category, position, dialogue lines
-├── lib/              # stage constants, reduced-motion hook, utils
-└── pages/            # Hub, Journal, Passport, Companions, Heritage, …
-```
-
-## 🚀 Getting Started
-
-Requirements: **Node 20+** and **pnpm 9+**.
+### Run the core game locally
 
 ```bash
 git clone https://github.com/adityarajgupta154/bharatverse-game.git
 cd bharatverse-game
-pnpm install
+pnpm install --frozen-lockfile
 
-# The game (Vite dev server)
-pnpm --filter @workspace/bharatverse run dev
-
-# Optional: API server & component sandbox
-pnpm --filter @workspace/api-server run dev
-pnpm --filter @workspace/mockup-sandbox run dev
-
-# Typecheck everything
-pnpm run typecheck
-
-# Production build (static bundle → artifacts/bharatverse/dist/public)
-pnpm --filter @workspace/bharatverse run build
+PORT=5173 BASE_PATH=/ pnpm --filter @workspace/bharatverse run dev
 ```
 
-> **Note:** in local dev outside Replit, the game's dev server expects `PORT` and `BASE_PATH` env vars (fail-fast by design), e.g. `PORT=5173 BASE_PATH=/ pnpm --filter @workspace/bharatverse run dev`. Production builds need neither.
+Open `http://localhost:5173`.
 
-## 🛠️ Dev Helpers
+The command above uses POSIX shell syntax. In PowerShell, set `$env:PORT="5173"` and `$env:BASE_PATH="/"` before running the pnpm command.
 
-| Helper | What it does |
+The core game can run without the API server or a Sarvam key. Server-backed guide, speech and transcription features require the optional API setup below.
+
+### Build and preview the game
+
+```bash
+pnpm --filter @workspace/bharatverse run build
+PORT=5173 BASE_PATH=/ pnpm --filter @workspace/bharatverse run serve
+```
+
+Build output: `artifacts/bharatverse/dist/public`.
+
+Builds default to the `/` base path. For a subpath deployment, set `BASE_PATH` during the build and configure the host to serve that path. Static hosting needs an SPA fallback to `index.html` for direct navigation to game routes.
+
+## Optional API and AI Guide
+
+Smriti Didi is a **controlled prototype**, not an unrestricted chatbot or a production-complete child-safety system. Guide answers are selected from reviewed content rather than displaying arbitrary model-generated prose.
+
+The API exposes guide, speech and transcription endpoints under `/api/sarvam`. It includes origin checks, input validation, rate and concurrency limits, topic restrictions and personal-information filters.
+
+### Server configuration
+
+| Variable | Purpose |
 | --- | --- |
-| `/world/sindhu-ghati?debug` | Shows hotspot outlines + NPC ids + dev-complete buttons on building cards |
-| `/world/sindhu-ghati?at=472` | Opens the world pre-scrolled to world-Y 472 |
+| `PORT` | Required API listening port; for example, `5000` locally |
+| `APP_ORIGIN` | Browser application's allowed origin; configure it to match the actual frontend |
+| `SARVAM_API_KEY` | Server-only provider credential for optional language and speech services |
+| `SARVAM_AI_PUBLIC` | Public-production opt-in; leave unset while public safety work is incomplete |
+| `NODE_ENV` | Runtime environment; production AI endpoints are disabled by default |
 
-## 🧭 Design Principles
+Set credentials through your environment's secret manager. Never put them in the README, client code, Git remote URL or committed environment files. The scripts do not automatically load an arbitrary `.env` file.
 
-1. **Pixel-parity with the reference art.** The illustrations are the spec: UI is either baked into the painting or measured against it.
-2. **Config over code.** Story content lives in JSON; engines are generic. New eras are data, not features.
-3. **Explicit failure.** Config validators throw with aggregated, actionable messages in dev; saves are schema-versioned; missing env vars fail fast.
-4. **Accessible by default.** Full keyboard paths, reduced-motion fallbacks for every animation, screen-reader-safe labels.
+Example API command after configuring any required secrets:
 
-## 🗺️ Roadmap
+```bash
+PORT=5000 APP_ORIGIN=http://localhost:5173 pnpm --filter @workspace/api-server run dev
+```
 
-- 🧩 **Minigames** (next up): *Naali Paheli — "Paani ko Raasta Do"* (rotate drain tiles, beat the monsoon) and *Sheher Banao — "Naya Mohalla"* (plan a settlement, survive the flood event).
-- 🏛️ **Magadha** and the remaining era worlds — the engine is ready; each is one painting + two JSON files.
-- 🔗 Node unlock-chain progression on the Memory Map.
-- 🔊 Audio: Smriti's voice lines and village ambience.
+**Local routing caveat:** starting both processes is not enough to connect the guide. The frontend makes relative `/api/...` requests, and the checked-in Vite configuration does not provide a local API proxy. Configure a same-origin reverse proxy or add a local Vite proxy for `/api` to the API port, and align `APP_ORIGIN` with the browser origin. Do not hardcode backend hostnames into browser components.
 
----
+Voice transcription sends submitted audio to the external speech provider. Do not use children's personal recordings for public testing without an appropriate consent and privacy process.
 
-<div align="center">
+## Checks and tests
 
-Built with ❤️ on [Replit](https://replit.com) · Smart India Hackathon 2026 (PS 26208)
+Run from the repository root:
 
-*Reference paintings and PRDs live in `attached_assets/` — they are the design source of truth.*
+```bash
+# Type-check shared libraries and artifacts
+pnpm run typecheck
 
-</div>
+# Validate world data, all six games, unlock rules and village simulation
+pnpm --filter @workspace/bharatverse run verify:games
+
+# Build just the game
+pnpm --filter @workspace/bharatverse run build
+
+# Browser tests
+pnpm --filter @workspace/bharatverse run test:e2e
+```
+
+Playwright's pre-test script installs Chromium. Linux environments may also require browser system libraries. The test configuration starts its own frontend server; ensure its port is free.
+
+`pnpm run build` at the root additionally type-checks and builds all workspace packages that provide a build script, including companion artifacts. It is broader than building the game alone.
+
+## Project structure
+
+```text
+artifacts/
+  bharatverse/             Main game
+    src/
+      components/          Map, world, guide and shared UI
+      game/                State, content, worlds and mini-game scenes
+      pages/               Routed screens
+    scripts/               Headless validation and simulation
+    tests/                 Playwright coverage
+  api-server/              Optional Express guide and speech API
+  bharatverse-sih-deck/     SIH presentation artifact
+  mockup-sandbox/           Isolated design/component previews
+lib/                       Shared schemas, API clients and workspace libraries
+docs/screenshots/          README images
+attached_assets/           Reference artwork, source documents and uploads
+scripts/                   Workspace tooling
+```
+
+## Limitations and roadmap
+
+- Some newer regional discovery cards still show “coming soon.”
+- Sindhu Ghati's final mystery activity is not yet a complete playable finale.
+- Walk-mode support is not a finished, consistent experience across every region.
+- The layout is landscape-first; portrait use can show a rotate-device prompt.
+- Keyboard and accessibility improvements remain ongoing, not fully certified.
+- Saves are local only, with no account system or cross-device recovery.
+- The AI Guide still needs public-release safety and privacy work. Keep production AI disabled until that work is reviewed.
+- Heritage content needs claim-level source citations and educator review before presenting it as a validated curriculum resource.
+- Learning outcomes have not yet been established through classroom studies.
+
+Future directions include more regional content, language support, teacher feedback and classroom pilots. These are plans, not claims about the current build.
+
+## Contributing and content review
+
+1. Keep changes focused and follow the existing world and scene structures.
+2. For historical claims, provide traceable references from sources such as NCERT, ASI, UNESCO or relevant scholarship.
+3. Check content for age-appropriateness and respectful representation.
+4. Run type checks and the relevant game validators.
+5. Include screenshots for interface changes and document any new configuration.
+
+Do not commit API keys, private recordings or personal student data. Avoid broad dependency or architecture changes unrelated to the feature being worked on.
+
+### Code and asset permissions
+
+The root package metadata declares MIT, but a standalone repository license file has not yet been included. Artwork, uploaded references, logos and third-party material may have separate rights. Do not assume the code's package metadata grants permission to redistribute every asset.

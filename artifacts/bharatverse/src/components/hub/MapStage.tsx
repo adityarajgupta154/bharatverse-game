@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '@/game/store';
 import { cn } from '@/lib/utils';
-import hubReference from '@/assets/images/hub-reference.png';
+import hubReference from '@/assets/images/hub-reference.webp';
 import { getWorld } from '@/game/worlds';
 import { RiftVeil, useRiftNavigate, consumeRiftFlag } from '@/components/world/RiftTransition';
 
@@ -38,13 +38,21 @@ export function MapStage() {
             className="absolute -translate-x-1/2 -translate-y-1/2"
             style={{ left: h.cx, top: h.cy, width: h.w, height: h.h }}
           >
+            {/* Filtered-out fade: the painted gate greys out softly (backdrop
+                dim over the opaque map painting, feathered ellipse) instead
+                of the old flat dark veil, which read as a black blob. */}
             <div
               aria-hidden
               className={cn(
                 'absolute inset-[-14px] rounded-[100%] transition-opacity duration-500 pointer-events-none',
                 visible ? 'opacity-0' : 'opacity-100'
               )}
-              style={{ background: 'radial-gradient(ellipse at center, rgba(5,4,3,0.82) 40%, transparent 72%)' }}
+              style={{
+                backdropFilter: 'grayscale(0.75) brightness(0.72)',
+                WebkitBackdropFilter: 'grayscale(0.75) brightness(0.72)',
+                maskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
+                WebkitMaskImage: 'radial-gradient(ellipse at center, black 50%, transparent 78%)',
+              }}
             />
             {/* Restored region: a soft golden aura on the gate (PRD 6.3 —
                 the hub art is already full-color, so "grey→color" reads as

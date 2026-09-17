@@ -51,7 +51,6 @@ export function GameScreen({ nodeId, gameId }: { nodeId: string; gameId: string 
     if (!canPlay) setLocation(world ? `/world/${nodeId}` : '/');
   }, [canPlay, world, nodeId, setLocation]);
 
-  const debug = useMemo(() => new URLSearchParams(window.location.search).has('debug'), []);
   const coarsePointer = useMemo(() => window.matchMedia('(pointer: coarse)').matches, []);
 
   const [phase, setPhase] = useState<Phase>('intro');
@@ -154,7 +153,9 @@ export function GameScreen({ nodeId, gameId }: { nodeId: string; gameId: string 
       {/* HUD chips (under the top nav) */}
       <div className="absolute left-[16px] top-[64px] flex items-center gap-[6px]">
         <span className={chip}>{game.title}</span>
-        <span className={cn(chip, 'text-primary/60 border-primary/25')}>Demo</span>
+        {game.demo && (
+          <span className={cn(chip, 'text-primary/60 border-primary/25')}>Demo</span>
+        )}
       </div>
       {hud && phase !== 'intro' && (
         <span className={cn(chip, 'absolute right-[16px] top-[64px]')}>{hud.objective}</span>
@@ -206,7 +207,8 @@ export function GameScreen({ nodeId, gameId }: { nodeId: string; gameId: string 
             </p>
           ))}
           <div className="mt-[9px] rounded border border-primary/20 bg-black/40 px-[8px] py-[6px] text-[7px] leading-[1.7] text-muted-foreground">
-            Chalo: WASD ya Arrow keys{coarsePointer ? ' (ya joystick)' : ''}
+            Chalo: WASD ya Arrow keys{coarsePointer ? ' (ya joystick)' : ''} · Daudo: Shift
+            {coarsePointer ? ' ya joystick kinaare tak' : ''}
             <br />
             Uthao / Rakho: E ya Space{coarsePointer ? ' (ya E button)' : ''} · Roko: Esc
           </div>
@@ -259,24 +261,18 @@ export function GameScreen({ nodeId, gameId }: { nodeId: string; gameId: string 
           </h2>
           <div className="w-[85%] h-px bg-primary/20 my-[9px] mx-auto" />
           <p className="text-[8px] leading-[1.65] text-foreground/90 px-[6px]">{game.winLine}</p>
-          <p className="text-[6.5px] text-muted-foreground mt-[6px]">
-            (Framework demo — asli level apni yaad ke saath agle update mein khulega.)
-          </p>
+          {game.demo && (
+            <p className="text-[6.5px] text-muted-foreground mt-[6px]">
+              (Framework demo — asli level apni yaad ke saath agle update mein khulega.)
+            </p>
+          )}
           <button
             autoFocus
-            onClick={backToVillage}
+            onClick={finishComplete}
             className="block mx-auto mt-[11px] text-[9px] uppercase tracking-[0.16em] font-bold text-black bg-primary hover:bg-primary/85 rounded-full px-[18px] py-[6px] transition-colors"
           >
             Village wapas jao
           </button>
-          {debug && (
-            <button
-              onClick={finishComplete}
-              className="block mx-auto mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-red-300 border border-red-400/50 rounded-full px-[8px] py-[3px] hover:bg-red-400/10 transition-colors"
-            >
-              Mark complete (dev)
-            </button>
-          )}
         </Card>
       )}
     </div>

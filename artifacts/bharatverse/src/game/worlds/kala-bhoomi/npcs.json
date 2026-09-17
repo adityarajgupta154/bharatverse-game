@@ -1,0 +1,19 @@
+[
+  {
+    "id": "shilpi-meera",
+    "name": "Shilpi Meera",
+    "category": "context",
+    "position": { "x": 400, "y": 690 },
+    "dialogueLines": [
+      {
+        "hi": "Aangan ki rangoli adhoori reh gayi — mere rang ke matke kho gaye hain!",
+        "en": "The courtyard rangoli is unfinished — my pots of color have gone missing!"
+      },
+      {
+        "hi": "Har rang dharti se banta hai — haldi se peela, neel se neela, majith se laal!",
+        "en": "Every color comes from the earth — yellow from turmeric, blue from indigo, red from madder!"
+      }
+    ],
+    "linkedBuildingId": "rangoli-rang"
+  }
+]

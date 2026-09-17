@@ -1,11 +1,14 @@
-import { useEffect, useRef } from 'react';
-import { X, Lock } from 'lucide-react';
+import { Square, Volume2, Lock } from 'lucide-react';
 import type { WorldBuilding, BuildingState, BuildingType } from '@/game/world-types';
+import type { DiscoveryDef } from '@/game/content';
+import { useSpeech } from '@/lib/useSpeech';
+import { CardShell } from './CardShell';
 
 /** Invitation copy once a building's game is actually playable. */
 const PLAY_LINES: Partial<Record<BuildingType, string>> = {
   minigame: 'Naali tooti hai aur baarish sar par — paani ko raasta doge?',
   builder: 'Nadi kinare naya mohalla basana hai — monsoon se pehle!',
+  climax: 'Is kshetra ki sabse badi yaad yahin chhupi hai — khel kar lautao!',
 };
 
 const TYPE_META: Record<BuildingType, { label: string; line: string }> = {
@@ -32,9 +35,13 @@ const TYPE_META: Record<BuildingType, { label: string; line: string }> = {
 };
 
 /**
- * Placeholder activation card (Task 2 wiring): shows what a building is and,
- * when locked, exactly what still has to be finished. Real experiences
- * (fact cards, minigames, builder, climax) replace the body in later tasks.
+ * Building activation card: shows what a building is and, when locked,
+ * exactly what still has to be finished. Unlocked buildings launch their
+ * real experience from here — a registered 2D game (`onPlay`) or written
+ * discovery content (`onOpenDiscovery` → FactCard). Only buildings whose
+ * content is still PENDING_CONTENT_TARGETS debt keep the "Jald aa raha
+ * hai" chip. Modal chrome (brackets, backdrop, close, focus rules) comes
+ * from CardShell.
  */
 export function BuildingCard({
   building,
@@ -43,6 +50,8 @@ export function BuildingCard({
   debug,
   onDevComplete,
   onPlay,
+  discovery,
+  onOpenDiscovery,
   onClose,
 }: {
   building: WorldBuilding;
@@ -54,142 +63,140 @@ export function BuildingCard({
   onDevComplete?: () => void;
   /** Launches the building's registered 2D game (minigame/builder types). */
   onPlay?: () => void;
+  /** Written discovery behind this building's explore:/recap: target, when shipped. */
+  discovery?: DiscoveryDef | null;
+  /** Opens that discovery (fact card / story recap) in place of this card. */
+  onOpenDiscovery?: () => void;
   onClose: () => void;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  // Modal focus: move focus in on open, restore on close.
-  useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    return () => prev?.focus();
-  }, []);
-
-  // ESC closes; Tab is trapped inside the dialog.
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        onClose();
-        return;
-      }
-      if (e.key !== 'Tab' || !cardRef.current) return;
-      const focusables = cardRef.current.querySelectorAll<HTMLElement>(
-        'button, a[href], [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-      if (!cardRef.current.contains(active)) {
-        e.preventDefault();
-        first.focus();
-      } else if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
   const meta = TYPE_META[building.type];
   const locked = state === 'locked';
 
+  // Smriti reads this card too (early readers): the invite when open, the
+  // "what's still pending" explanation when locked. Same one-voice speech
+  // session as FactCard/HUD; hidden without a speech engine.
+  const { canListen, speaking, toggle } = useSpeech();
+  const spokenLine = locked
+    ? `Abhi bandh hai. Yeh dwar tabhi khulega jab yeh sab poora hoga: ${pendingNames.join(', ')}.`
+    : onPlay
+      ? PLAY_LINES[building.type] ?? meta.line
+      : discovery
+        ? discovery.invite
+        : meta.line;
+
   return (
-    <div
-      className="absolute inset-0 z-50 flex items-center justify-center pointer-events-auto"
-      onClick={onClose}
+    <CardShell
+      label={building.name}
+      widthClass="w-[290px]"
+      paddingClass="p-[14px]"
+      onClose={onClose}
     >
-      <div className="absolute inset-0 bg-black/55" />
-      <div
-        ref={cardRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={building.name}
-        onClick={e => e.stopPropagation()}
-        className="relative w-[290px] bg-[#0a0907] border border-primary/40 rounded-lg p-[14px] text-center shadow-2xl"
-      >
-        {/* Corner brackets — same visual language as the info panel */}
-        <div className="absolute top-[3px] left-[3px] w-[10px] h-[10px] border-t-[1.5px] border-l-[1.5px] border-primary pointer-events-none" />
-        <div className="absolute top-[3px] right-[3px] w-[10px] h-[10px] border-t-[1.5px] border-r-[1.5px] border-primary pointer-events-none" />
-        <div className="absolute bottom-[3px] left-[3px] w-[10px] h-[10px] border-b-[1.5px] border-l-[1.5px] border-primary pointer-events-none" />
-        <div className="absolute bottom-[3px] right-[3px] w-[10px] h-[10px] border-b-[1.5px] border-r-[1.5px] border-primary pointer-events-none" />
+      <span className="text-[6.5px] text-primary/90 uppercase tracking-[0.16em] font-medium">
+        {meta.label}
+      </span>
+      <h2 className="font-title-serif text-[14px] font-bold text-white tracking-wide mt-[3px] leading-tight text-glow">
+        {building.name}
+      </h2>
+      <span className="text-[7.5px] text-primary/80 block mt-[2px]">{building.subtitle}</span>
 
+      {canListen && (
         <button
-          ref={closeRef}
-          aria-label="Band karo"
-          onClick={onClose}
-          className="absolute top-[6px] right-[6px] w-[16px] h-[16px] flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+          onClick={() => toggle([spokenLine])}
+          aria-pressed={speaking}
+          aria-label={speaking ? 'Roko — Smriti didi ka padhna roko' : 'Suno — Smriti didi se card suno'}
+          data-testid="building-listen"
+          className="mx-auto mt-[7px] flex items-center gap-[5px] text-[7px] uppercase tracking-[0.16em] font-bold text-primary border border-primary/35 rounded-full px-[10px] py-[4px] hover:bg-primary/10 transition-colors"
         >
-          <X className="w-[11px] h-[11px]" />
+          {speaking ? (
+            <>
+              <Square className="w-[8px] h-[8px] animate-pulse" aria-hidden />
+              Roko
+            </>
+          ) : (
+            <>
+              <Volume2 className="w-[9px] h-[9px]" aria-hidden />
+              Suno
+            </>
+          )}
         </button>
+      )}
 
-        <span className="text-[6.5px] text-primary/90 uppercase tracking-[0.16em] font-medium">
-          {meta.label}
-        </span>
-        <h2 className="font-title-serif text-[14px] font-bold text-white tracking-wide mt-[3px] leading-tight text-glow">
-          {building.name}
-        </h2>
-        <span className="text-[7.5px] text-primary/80 block mt-[2px]">{building.subtitle}</span>
+      <div className="w-[85%] h-px bg-primary/20 my-[10px] mx-auto" />
 
-        <div className="w-[85%] h-px bg-primary/20 my-[10px] mx-auto" />
-
-        {locked ? (
-          <>
-            <div className="flex items-center justify-center gap-[5px] text-muted-foreground">
-              <Lock className="w-[10px] h-[10px]" />
-              <span className="text-[8.5px] uppercase tracking-widest font-bold">Abhi bandh hai</span>
-            </div>
-            <p className="text-[7.5px] leading-[1.6] text-muted-foreground mt-[8px]">
-              Yeh dwar tabhi khulega jab yeh sab poora hoga:
-            </p>
-            <ul className="mt-[6px] space-y-[3px]">
-              {pendingNames.map(n => (
-                <li key={n} className="text-[7.5px] text-primary/90">
-                  ◆ {n}
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : (
-          <>
-            <p className="text-[8px] leading-[1.6] text-foreground/90 px-[6px]">
-              {onPlay ? PLAY_LINES[building.type] ?? meta.line : meta.line}
-            </p>
-            {onPlay ? (
-              <>
-                {state === 'explored' && (
-                  <span className="block mx-auto w-fit mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-primary/70 border border-primary/25 rounded-full px-[8px] py-[3px]">
-                    ✓ Yaad laut chuki hai
-                  </span>
-                )}
-                <button
-                  onClick={onPlay}
-                  className="block mx-auto mt-[10px] text-[8.5px] uppercase tracking-[0.16em] font-bold text-black bg-primary hover:bg-primary/85 rounded-full px-[16px] py-[6px] transition-colors"
-                >
-                  ▶ {state === 'explored' ? 'Phir Se Khelo' : 'Khel Shuru Karo'}
-                </button>
-              </>
-            ) : (
-              <span className="inline-block mt-[10px] text-[6.5px] uppercase tracking-[0.14em] text-primary border border-primary/40 rounded-full px-[8px] py-[3px]">
-                {state === 'explored' ? '✓ Yaad laut chuki hai' : 'Jald aa raha hai'}
-              </span>
-            )}
-            {debug && state !== 'explored' && onDevComplete && (
+      {locked ? (
+        <>
+          <div className="flex items-center justify-center gap-[5px] text-muted-foreground">
+            <Lock className="w-[10px] h-[10px]" />
+            <span className="text-[8.5px] uppercase tracking-widest font-bold">Abhi bandh hai</span>
+          </div>
+          <p className="text-[7.5px] leading-[1.6] text-muted-foreground mt-[8px]">
+            Yeh dwar tabhi khulega jab yeh sab poora hoga:
+          </p>
+          <ul className="mt-[6px] space-y-[3px]">
+            {pendingNames.map(n => (
+              <li key={n} className="text-[7.5px] text-primary/90">
+                ◆ {n}
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <>
+          <p className="text-[8px] leading-[1.6] text-foreground/90 px-[6px]">
+            {onPlay
+              ? PLAY_LINES[building.type] ?? meta.line
+              : discovery
+                ? discovery.invite
+                : meta.line}
+          </p>
+          {onPlay ? (
+            <>
+              {state === 'explored' && (
+                <span className="block mx-auto w-fit mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-primary/70 border border-primary/25 rounded-full px-[8px] py-[3px]">
+                  ✓ Yaad laut chuki hai
+                </span>
+              )}
               <button
-                onClick={onDevComplete}
-                className="block mx-auto mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-red-300 border border-red-400/50 rounded-full px-[8px] py-[3px] hover:bg-red-400/10 transition-colors"
+                onClick={onPlay}
+                className="block mx-auto mt-[10px] text-[8.5px] uppercase tracking-[0.16em] font-bold text-black bg-primary hover:bg-primary/85 rounded-full px-[16px] py-[6px] transition-colors"
               >
-                Mark complete (dev)
+                ▶ {state === 'explored' ? 'Phir Se Khelo' : 'Khel Shuru Karo'}
               </button>
-            )}
-          </>
-        )}
-      </div>
-    </div>
+            </>
+          ) : discovery && onOpenDiscovery ? (
+            <>
+              {discovery.kind === 'explore' && state === 'explored' && (
+                <span className="block mx-auto w-fit mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-primary/70 border border-primary/25 rounded-full px-[8px] py-[3px]">
+                  ✓ Yaad laut chuki hai
+                </span>
+              )}
+              <button
+                onClick={onOpenDiscovery}
+                className="block mx-auto mt-[10px] text-[8.5px] uppercase tracking-[0.16em] font-bold text-black bg-primary hover:bg-primary/85 rounded-full px-[16px] py-[6px] transition-colors"
+              >
+                ✦{' '}
+                {discovery.kind === 'recap'
+                  ? 'Kahani Phir Se Suno'
+                  : state === 'explored'
+                    ? 'Phir Se Dekho'
+                    : 'Khoj Shuru Karo'}
+              </button>
+            </>
+          ) : (
+            <span className="inline-block mt-[10px] text-[6.5px] uppercase tracking-[0.14em] text-primary border border-primary/40 rounded-full px-[8px] py-[3px]">
+              {state === 'explored' ? '✓ Yaad laut chuki hai' : 'Jald aa raha hai'}
+            </span>
+          )}
+          {debug && state !== 'explored' && onDevComplete && (
+            <button
+              onClick={onDevComplete}
+              className="block mx-auto mt-[8px] text-[6.5px] uppercase tracking-[0.14em] text-red-300 border border-red-400/50 rounded-full px-[8px] py-[3px] hover:bg-red-400/10 transition-colors"
+            >
+              Mark complete (dev)
+            </button>
+          )}
+        </>
+      )}
+    </CardShell>
   );
 }

@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -27,6 +27,13 @@ import { GameScreen } from '@/components/game/GameScreen';
 
 const queryClient = new QueryClient();
 
+// DEV-only collision authoring tool (Movement Bridge PRD Task 1). The
+// compile-time conditional dead-code-eliminates the dynamic import in
+// production builds, so the editor never ships to players.
+const MaskEditorScreen = import.meta.env.DEV
+  ? lazy(() => import('@/components/dev/MaskEditorScreen'))
+  : null;
+
 function Router() {
   return (
     <RoutedErrorBoundary>
@@ -54,6 +61,15 @@ function Router() {
           <Route path="/world/:nodeId">
             {params => <NodeWorldScreen nodeId={params.nodeId} />}
           </Route>
+          {import.meta.env.DEV && MaskEditorScreen ? (
+            <Route path="/dev/mask-editor">
+              {() => (
+                <Suspense fallback={null}>
+                  <MaskEditorScreen />
+                </Suspense>
+              )}
+            </Route>
+          ) : null}
           <Route component={NotFound} />
         </Switch>
       </StageLayout>

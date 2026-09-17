@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { GAME_NODES, GameNode, INITIAL_PLAYER, PlayerState, NodeStatus } from './nodes';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { GAME_NODES, GameNode, INITIAL_PLAYER, PlayerState, NodeStatus, FilterCategory, applyUnlockRules } from './nodes';
 
 interface GameState {
   player: PlayerState;
   nodes: GameNode[];
   selectedNodeId: string;
-  activeFilters: NodeStatus[];
+  activeFilters: FilterCategory[];
   /**
    * World-layer progress deltas: nodeId → ids of buildings the player has
    * completed there. Only ids are stored — building content always comes
@@ -15,15 +15,17 @@ interface GameState {
 }
 
 const STORAGE_KEY = 'bharatverse-state';
-// v3 adds completedBuildings (world-layer progress deltas). v2 saves load
-// fine — the new field just starts empty.
-const SCHEMA_VERSION = 3;
+// v3 added completedBuildings (world-layer progress deltas). v4 adds the
+// story_mission legend filter — older saves keep all progress but reset
+// activeFilters to the all-on default (the stored subset predates the new
+// category, so trusting it would silently hide story missions).
+const SCHEMA_VERSION = 4;
 
 const INITIAL_STATE: GameState = {
   player: INITIAL_PLAYER,
   nodes: GAME_NODES,
   selectedNodeId: 'sindhu-ghati',
-  activeFilters: ['explored', 'in_progress', 'locked'],
+  activeFilters: ['explored', 'in_progress', 'locked', 'story_mission'],
   completedBuildings: {},
 };
 
@@ -41,7 +43,7 @@ interface PersistedState {
   v: number;
   player: PlayerState;
   selectedNodeId: string;
-  activeFilters: NodeStatus[];
+  activeFilters: FilterCategory[];
   nodes: PersistedNodeProgress[];
   completedBuildings: Record<string, string[]>;
 }
@@ -50,6 +52,12 @@ const VALID_STATUSES: NodeStatus[] = ['explored', 'in_progress', 'locked'];
 
 function isValidStatus(s: unknown): s is NodeStatus {
   return typeof s === 'string' && (VALID_STATUSES as string[]).includes(s);
+}
+
+const VALID_FILTERS: FilterCategory[] = [...VALID_STATUSES, 'story_mission'];
+
+function isValidFilter(f: unknown): f is FilterCategory {
+  return typeof f === 'string' && (VALID_FILTERS as string[]).includes(f);
 }
 
 function clampNumber(value: unknown, fallback: number, min: number, max: number): number {
@@ -64,9 +72,10 @@ function loadInitialState(): GameState {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return INITIAL_STATE;
     const parsed = JSON.parse(saved) as Partial<PersistedState>;
-    // v2 → v3 is additive (completedBuildings starts empty), so v2 saves are
-    // still accepted; anything else is discarded.
-    if (parsed.v !== 2 && parsed.v !== SCHEMA_VERSION) return INITIAL_STATE;
+    // v2 → v4 are additive (completedBuildings starts empty, filters reset
+    // to default), so older saves are still accepted; anything else is
+    // discarded.
+    if (parsed.v !== 2 && parsed.v !== 3 && parsed.v !== SCHEMA_VERSION) return INITIAL_STATE;
 
     const rawNodes = Array.isArray(parsed.nodes) ? parsed.nodes : [];
     const progressById = new Map<string, Partial<PersistedNodeProgress>>(
@@ -98,9 +107,13 @@ function loadInitialState(): GameState {
       maxXp,
     };
 
-    const filters = Array.isArray(parsed.activeFilters)
-      ? parsed.activeFilters.filter(isValidStatus)
-      : [];
+    // Filters: only a save written by THIS schema version is trusted — v4
+    // introduced story_mission, so an older save's subset would silently
+    // start with story missions hidden.
+    const filters =
+      parsed.v === SCHEMA_VERSION && Array.isArray(parsed.activeFilters)
+        ? parsed.activeFilters.filter(isValidFilter)
+        : [];
 
     // Building ids are validated for shape only (string arrays, deduped);
     // membership is resolved against world configs at read time, so stale ids
@@ -150,7 +163,7 @@ interface GameContextType {
   state: GameState;
   selectNode: (id: string) => void;
   updateNodeStatus: (id: string, updates: Partial<GameNode>) => void;
-  toggleFilter: (status: NodeStatus) => void;
+  toggleFilter: (category: FilterCategory) => void;
   /** Idempotent: records a world-layer building as completed by the player. */
   markBuildingComplete: (nodeId: string, buildingId: string) => void;
   /**
@@ -210,12 +223,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
-  const toggleFilter = (status: NodeStatus) => {
+  const toggleFilter = (category: FilterCategory) => {
     setState(s => {
-      const isCurrentlyActive = s.activeFilters.includes(status);
+      const isCurrentlyActive = s.activeFilters.includes(category);
       const newFilters = isCurrentlyActive
-        ? s.activeFilters.filter(f => f !== status)
-        : [...s.activeFilters, status];
+        ? s.activeFilters.filter(f => f !== category)
+        : [...s.activeFilters, category];
 
       // Don't allow unchecking everything
       if (newFilters.length === 0) return s;
@@ -224,8 +237,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // Readers see nodes AFTER progression rules: a node whose unlock condition
+  // is met is never presented as locked, even if an old save says so. The raw
+  // (persisted) state is untouched — unlocks are derived, not stored.
+  const derivedState = useMemo(
+    () => ({ ...state, nodes: applyUnlockRules(state.nodes, state.completedBuildings) }),
+    [state]
+  );
+
   return (
-    <GameContext.Provider value={{ state, selectNode, updateNodeStatus, toggleFilter, markBuildingComplete, restoreNode }}>
+    <GameContext.Provider value={{ state: derivedState, selectNode, updateNodeStatus, toggleFilter, markBuildingComplete, restoreNode }}>
       {children}
     </GameContext.Provider>
   );

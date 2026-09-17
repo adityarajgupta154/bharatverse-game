@@ -215,3 +215,35 @@
     opacity: 0.8;
   }
 }
+
+/* Village walking (Task: Aru walk) — subtle step bob while moving */
+@keyframes aru-bob {
+  from { transform: translate(-50%, -100%) translateY(0) var(--aru-flip, scaleX(1)); }
+  to   { transform: translate(-50%, -100%) translateY(-3px) var(--aru-flip, scaleX(1)); }
+}
+
+/* Time Rift portal — the painted swirl spins like a slow whirlpool while
+   a purple glow breathes behind it (see Oracle.tsx). */
+@keyframes rift-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rift-glow-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.06); }
+}
+.animate-rift-swirl {
+  animation: rift-spin 26s linear infinite;
+}
+.animate-rift-swirl-slow {
+  animation: rift-spin 44s linear infinite reverse;
+}
+.animate-rift-glow-pulse {
+  animation: rift-glow-pulse 3.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-rift-swirl,
+  .animate-rift-swirl-slow,
+  .animate-rift-glow-pulse {
+    animation: none;
+  }
+}

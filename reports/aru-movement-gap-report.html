@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BharatVerse — Aru Movement Gap: Detailed Analysis Report</title>
+<style>
+  :root {
+    --bg: #16100a; --card: #221809; --card2: #2a1f10; --line: #4a3620;
+    --gold: #d4a437; --gold-soft: #e8c877; --cream: #f0e6d2; --muted: #b8a888;
+    --ok: #7dc98f; --bad: #e08b7b; --warn: #e8c877; --code-bg: #120d07;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--cream); font-family: "Segoe UI", system-ui, -apple-system, sans-serif; line-height: 1.65; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 28px 80px; }
+  header { border-bottom: 2px solid var(--gold); padding-bottom: 20px; margin-bottom: 30px; }
+  .kicker { color: var(--gold); letter-spacing: 3px; font-size: 12px; text-transform: uppercase; }
+  h1 { font-family: Georgia, serif; font-size: 32px; margin: 8px 0 6px; color: var(--gold-soft); }
+  .sub { color: var(--muted); font-size: 14px; }
+  h2 { font-family: Georgia, serif; color: var(--gold); font-size: 22px; margin-top: 44px; border-left: 4px solid var(--gold); padding-left: 12px; }
+  h3 { color: var(--gold-soft); font-size: 16px; margin-top: 26px; }
+  p { margin: 10px 0; }
+  .tldr { background: linear-gradient(135deg, var(--card2), var(--card)); border: 1px solid var(--gold); border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .tldr b { color: var(--gold-soft); }
+  .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; margin: 14px 0; }
+  .ok { color: var(--ok); font-weight: 600; }
+  .bad { color: var(--bad); font-weight: 600; }
+  .warn { color: var(--warn); font-weight: 600; }
+  code, .file { background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-family: "Consolas", "Menlo", monospace; font-size: 13px; color: var(--gold-soft); }
+  pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; color: var(--cream); }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  th { background: var(--card2); color: var(--gold); text-align: left; padding: 10px 12px; border: 1px solid var(--line); }
+  td { padding: 9px 12px; border: 1px solid var(--line); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .arch { display: flex; gap: 14px; flex-wrap: wrap; margin: 18px 0; }
+  .arch .layer { flex: 1 1 280px; border-radius: 10px; padding: 14px 16px; border: 1px solid var(--line); background: var(--card); }
+  .arch .layer h4 { margin: 0 0 8px; font-size: 15px; }
+  .arch .l1 h4 { color: var(--bad); } .arch .l2 h4 { color: var(--bad); } .arch .l3 h4 { color: var(--ok); }
+  .pill { display: inline-block; border-radius: 999px; padding: 2px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+  .pill.no { background: rgba(224,139,123,0.15); color: var(--bad); border: 1px solid var(--bad); }
+  .pill.yes { background: rgba(125,201,143,0.15); color: var(--ok); border: 1px solid var(--ok); }
+  .pill.part { background: rgba(232,200,119,0.12); color: var(--warn); border: 1px solid var(--warn); }
+  .gap { border-left: 4px solid var(--bad); background: var(--card); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; }
+  .gap h4 { margin: 0 0 6px; color: var(--bad); font-size: 15px; }
+  .rec { border-left: 4px solid var(--ok); background: var(--card); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; }
+  .rec h4 { margin: 0 0 6px; color: var(--ok); font-size: 15px; }
+  .small { font-size: 12.5px; color: var(--muted); }
+  footer { margin-top: 60px; border-top: 1px solid var(--line); padding-top: 16px; color: var(--muted); font-size: 12.5px; }
+  ul { margin: 8px 0; padding-left: 22px; }
+  li { margin: 5px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">BharatVerse &middot; Technical Analysis Report</div>
+  <h1>Aru Move / Walk / Run Kyu Nahi Karta — Poora Gap Analysis</h1>
+  <div class="sub">Date: 30 August 2026 &middot; Scope: <code>artifacts/bharatverse</code> ka har folder & file &middot; Language: Hinglish</div>
+</header>
+
+<!-- ================= TL;DR ================= -->
+<div class="tldr">
+  <b>Ek line mein jawab:</b> Aru ke paas movement ka poora system (keyboard + touch + collision + camera) project mein <b>maujood hai aur kaam karta hai</b> — lekin woh sirf <b>minigame screen ke andar</b> (jaise Naali Paheli) chalta hai. Memory Map aur Village screens par Aru <b>ek entity hi nahi hai</b> — wahan woh ya to <b>painting ke andar baked</b> hai ya <b>render hi nahi hota</b>. Isliye wahan chalna, daudna, ghoomna technically impossible hai — yeh <b>bug nahi, architecture ka design gap</b> hai. Aur <b>"Run" (daudna) feature poore project mein kahin bana hi nahi</b> — sirf ek fixed walk speed hai.
+</div>
+
+<!-- ================= 1. ARCHITECTURE ================= -->
+<h2>1. Sabse Pehle: Game 3 Alag "Duniya" Mein Bana Hai</h2>
+<p>Analysis mein sabse important finding yeh hai ki BharatVerse ek single game-engine app nahi hai. Yeh <b>teen bilkul alag technologies</b> se bane screens ka collection hai, aur Aru ka "wajood" teeno mein alag hai:</p>
+
+<div class="arch">
+  <div class="layer l1">
+    <h4>Layer 1 — Memory Map (Hub)</h4>
+    <span class="pill no">MOVEMENT IMPOSSIBLE</span>
+    <p class="small">Ek static PNG image (<code>hub-reference.png</code>, 2.57 MB). Aru, gates, paths — <b>sab artwork ke andar baked</b> hain. Aru yahan koi element hi nahi hai jo hil sake — woh wallpaper ka hissa hai. Upar sirf invisible click-buttons (hotspots) hain.</p>
+  </div>
+  <div class="layer l2">
+    <h4>Layer 2 — Village World (Mohenjo-Daro)</h4>
+    <span class="pill no">ARU RENDER HI NAHI HOTA</span>
+    <p class="small">Ek static painting (<code>village-sindhu.jpg</code>, 1024&times;1536) jo React (HTML DOM) mein dikhai jaati hai. Isme <b>Aru ka sprite kahin draw hi nahi hota</b>. Aap painting ko sirf pan/scroll karte ho; buildings & NPCs click/hover hotspots hain. Point-and-click adventure pattern.</p>
+  </div>
+  <div class="layer l3">
+    <h4>Layer 3 — Minigame (Canvas Engine)</h4>
+    <span class="pill yes">MOVEMENT WORKS ✓</span>
+    <p class="small">Asli 2D game engine — <code>&lt;canvas&gt;</code> par 60fps loop. Yahan Aru ek living entity hai: position, speed 190px/s, collision, camera follow, WASD/arrows + mobile joystick. Naali Paheli isi par bana hai aur fully verified hai.</p>
+  </div>
+</div>
+
+<p><b>Gap ka core yahi hai:</b> jo movement engine Layer 3 mein hai, woh Layer 1 & 2 se <b>connect hi nahi kiya gaya</b>. Village/Hub screens DOM-based "menu screens" jaise bane hain, game world jaise nahi.</p>
+
+<!-- ================= 2. SCREEN MATRIX ================= -->
+<h2>2. Screen-by-Screen: Aru Kahan Kya Kar Sakta Hai</h2>
+<table>
+  <tr><th>Screen (Route)</th><th>File</th><th>Aru kaise bana hai</th><th>Walk</th><th>Run</th><th>Input jo kaam karta hai</th></tr>
+  <tr>
+    <td>Memory Map<br><code>/</code></td>
+    <td><span class="file">components/hub/MapStage.tsx</span> (line 16–25)</td>
+    <td>Static <code>&lt;img&gt;</code> — Aru image ke pixels mein baked (code comment khud yeh bolta hai)</td>
+    <td class="bad">✗</td><td class="bad">✗</td>
+    <td>Gate buttons par click (line 59–80); hover = sirf glow</td>
+  </tr>
+  <tr>
+    <td>Village World<br><code>/world/sindhu-ghati</code></td>
+    <td><span class="file">components/world/NodeWorldScreen.tsx</span> (line 175–180)</td>
+    <td><b>Kahin nahi</b> — painting mein Aru hai hi nahi, koi sprite element nahi</td>
+    <td class="bad">✗</td><td class="bad">✗</td>
+    <td>Painting pan: mouse drag / wheel / touch drag (line 122–153); buildings = click (<span class="file">NodeBuilding.tsx</span>); NPC = hover/focus (<span class="file">NpcLayer.tsx</span>)</td>
+  </tr>
+  <tr>
+    <td>Minigame<br><code>/world/&hellip;/game/drain-puzzle</code></td>
+    <td><span class="file">components/game/GameScreen.tsx</span> + <span class="file">game/games/drain-puzzle-scene.ts</span> (Aru draw: line 656–675)</td>
+    <td>Canvas sprite — real position, collision box 28&times;20px, shadow, facing flip</td>
+    <td class="ok">✓</td><td class="bad">✗ (feature hi nahi hai)</td>
+    <td>WASD / Arrow keys, E/Space (action), Esc (pause), mobile joystick + action button</td>
+  </tr>
+  <tr>
+    <td>City Builder (demo)<br><code>/world/&hellip;/game/city-builder</code></td>
+    <td><span class="file">game/games/demo-scene.ts</span> (Aru draw: line 287–311)</td>
+    <td>Canvas sprite (framework demo scene)</td>
+    <td class="ok">✓</td><td class="bad">✗</td>
+    <td>Same as above</td>
+  </tr>
+  <tr>
+    <td>Journal / Passport / Companions / Heritage / Oracle / Settings</td>
+    <td><span class="file">src/pages/*.tsx</span></td>
+    <td>Aru sirf text/stats ke roop mein (naam, level, XP)</td>
+    <td class="bad">✗</td><td class="bad">✗</td>
+    <td>Normal UI clicks</td>
+  </tr>
+</table>
+
+<!-- ================= 3. ENGINE ================= -->
+<h2>3. Jahan Movement Kaam Karta Hai — Engine Ka Anatomy</h2>
+<p>Yeh samajhna zaroori hai ki problem "movement code kharab hai" wali <b>nahi</b> hai. Engine solid hai. <span class="file">src/game/engine/</span> mein 5 files hain:</p>
+<table>
+  <tr><th>File</th><th>Kaam</th><th>Status</th></tr>
+  <tr><td><span class="file">input.ts</span> (131 lines)</td><td>Keyboard (WASD/arrows/E/Space/Enter) + touch joystick + action queue. Listeners <b>window par</b> lagte hain — canvas focus ki zaroorat nahi. Diagonal movement normalized (1.0 speed).</td><td class="ok">Working</td></tr>
+  <tr><td><span class="file">movement.ts</span> (61 lines)</td><td>Collision-aware movement: axis-separated AABB, quarter-tile substeps (tunneling se bachav), wall-sliding. Har frame: <code>dx = dir.x &times; speed &times; dt</code>.</td><td class="ok">Working</td></tr>
+  <tr><td><span class="file">camera.ts</span> (23 lines)</td><td>Camera Aru ko follow karta hai, level ke edges par clamp.</td><td class="ok">Working</td></tr>
+  <tr><td><span class="file">loop.ts</span> (65 lines)</td><td>Fixed 60Hz update + render loop (requestAnimationFrame + accumulator).</td><td class="ok">Working</td></tr>
+  <tr><td><span class="file">sprites.ts</span> (62 lines)</td><td>Image loading helpers.</td><td class="ok">Working</td></tr>
+</table>
+
+<h3>Movement kab chalta hai, kab nahi (minigame ke andar bhi)</h3>
+<ul>
+  <li><b>Intro card dikh raha ho</b> ("Shuru Karo" button) → movement <span class="bad">OFF</span>. Sirf button click ke baad ON hota hai (<span class="file">GameScreen.tsx:68, 214–226</span>). Agar aapko lagta hai "game khula par Aru nahi chal raha" — 90% chance yeh hai ki intro card par "▶ SHURU KARO" abhi dabaya nahi gaya.</li>
+  <li><b>Pause (Esc)</b> → OFF, dobara Esc → ON.</li>
+  <li><b>Jeetne ke baad</b> (win card) → OFF (by design).</li>
+  <li>Baaki har waqt: keyboard se turant chalta hai — yeh e2e testing + deterministic simulation dono se verified hai.</li>
+</ul>
+
+<!-- ================= 4. GAPS ================= -->
+<h2>4. Root Cause: Exact 5 Gaps</h2>
+
+<div class="gap">
+  <h4>GAP #1 — Village screen mein "player entity layer" hai hi nahi</h4>
+  <p><span class="file">NodeWorldScreen.tsx</span> ek painting-viewer hai: static <code>&lt;img&gt;</code> + pan/scroll + click hotspots. Isme na Aru ka sprite hai, na position state, na input-to-movement wiring, na collision. Aru wahan "chal nahi pata" nahi — <b>Aru wahan hai hi nahi</b>.</p>
+</div>
+
+<div class="gap">
+  <h4>GAP #2 — Hub map par Aru artwork mein baked hai</h4>
+  <p><span class="file">MapStage.tsx:16–25</span> ka comment khud kehta hai: map, gates, rings, paths aur <b>Aru — sab reference art ke andar baked</b> hain. Ek painted pixel ko keyboard se nahi hilaya ja sakta. Isko walkable banane ke liye Aru ko art se nikaal kar ek alag layer/sprite banana padega.</p>
+</div>
+
+<div class="gap">
+  <h4>GAP #3 — Walkability/collision data sirf minigame levels ke paas hai</h4>
+  <p>Engine ko chalne ke liye chahiye: "kaunsi jagah walkable hai, kaunsi blocked". Yeh data (tile grid + isWalkable) sirf <span class="file">drain-puzzle-scene.ts</span> / <span class="file">demo-scene.ts</span> ke andar hai. Village painting (<code>village-sindhu.jpg</code>) ke liye <b>koi collision map authored nahi hai</b> — buildings/paani/gharon ke aage rukne ka data exist nahi karta.</p>
+</div>
+
+<div class="gap">
+  <h4>GAP #4 — "Run/Sprint" feature kahin implement nahi hai</h4>
+  <p>Poore codebase mein ek hi speed hai: <code>PLAYER_SPEED = 190</code> px/sec (walk). Koi Shift-to-run, dash, stamina, speed multiplier — kuch nahi (<span class="file">input.ts</span> mein sirf movement + action keys defined hain). Isliye Aru minigame mein bhi sirf <b>walk</b> karta hai, <b>run kabhi nahi</b>.</p>
+</div>
+
+<div class="gap">
+  <h4>GAP #5 — Game "isometric" hai hi nahi (art ka illusion hai)</h4>
+  <p>Engine pure <b>top-down orthogonal</b> hai: square 64px tiles, seedha <code>x = col&times;64, y = row&times;64</code> par draw (<span class="file">engine/types.ts:3–7</span>). Koi diamond projection, skew, ya depth-sorting math nahi hai. Village painting perspective/isometric-jaisi <i>dikhti</i> hai (artist ne waise banayi hai), par engine flat hai. Isliye "isometric view hone ke baad bhi" wali expectation art se aa rahi hai, code se nahi.</p>
+</div>
+
+<!-- ================= 5. FILE BY FILE ================= -->
+<h2>5. File-by-File / Folder-by-Folder Analysis</h2>
+<p class="small">Har folder ke saamne movement ke nazariye se uska role. (Line counts actual hain.)</p>
+<pre>
+artifacts/bharatverse/
+├── vite.config.ts (89)          — Build/dev config. Movement se koi lena-dena nahi.
+├── package.json                 — Scripts: dev/build/typecheck/verify:drain-puzzle.
+├── scripts/
+│   └── verify-drain-puzzle.ts   — Headless solvability checker: puzzle poora khel kar
+│                                  proof deta hai ki movement+level completable hai. ✓
+├── public/                      — favicon, robots.txt. (Neutral)
+├── dist/, node_modules/         — Generated output. (Neutral)
+└── src/
+    ├── main.tsx (17)            — App bootstrap. (Neutral)
+    ├── App.tsx (84)             — Router: /, /world/:nodeId, /world/:nodeId/game/:gameId
+    │                              + 7 aur routes. Screens ko jodta hai. (Neutral)
+    ├── index.css (217)          — Palette, fonts, stage classes. (Visual only)
+    │
+    ├── pages/ (9 files)         — Hub/Journal/Passport/... route shells.
+    │                              ✗ Koi player entity nahi — normal UI pages.
+    │
+    ├── components/
+    │   ├── hub/ (8 files)       — MEMORY MAP LAYER.
+    │   │   ├── MapStage.tsx (89)     ✗ GAP #2: static img, Aru art mein baked;
+    │   │   │                            upar sirf click-hotspot buttons.
+    │   │   ├── StageLayout.tsx (65)  — 1024×592 fixed stage scaling.
+    │   │   ├── TopNav/InfoPanel/RightControls/LegendBar/SmritiDialogue
+    │   │   │                         — UI chrome; Aru sirf stats mein.
+    │   │
+    │   ├── world/ (6 files)     — VILLAGE LAYER (Mohenjo-Daro).
+    │   │   ├── NodeWorldScreen.tsx (267) ✗ GAP #1: static painting + pan/scroll
+    │   │   │                       (drag/wheel/arrows-scroll) + click hotspots.
+    │   │   │                       Aru ka sprite RENDER HI NAHI hota.
+    │   │   ├── NodeBuilding.tsx (63)   — click-based building markers.
+    │   │   ├── NpcLayer.tsx (204)      — hover/focus NPC bubbles (proximity NAHI —
+    │   │   │                             kyunki Aru hai hi nahi jiska paas jaana ho).
+    │   │   ├── BuildingCard.tsx (195)  — building modal (Esc/Tab-trap keyboard).
+    │   │   ├── RiftTransition.tsx, DialogueBubble.tsx — transitions/bubbles.
+    │   │
+    │   ├── game/ (2 files)      — MINIGAME LAYER (yahan sab kaam karta hai ✓).
+    │   │   ├── GameScreen.tsx (299) ✓ Canvas host: loop chalata hai, input
+    │   │   │                       phase==='play' par ON, HUD, intro/pause/win,
+    │   │   │                       completion → village building complete.
+    │   │   └── VirtualJoystick.tsx (71) ✓ Mobile/touch joystick.
+    │   │
+    │   └── ui/ (~50 files)      — shadcn/Radix primitives (buttons, cards...).
+    │                              Zyada tar scaffolded/unused. (Neutral)
+    │
+    ├── game/
+    │   ├── engine/ (5 files)    ✓ MOVEMENT ENGINE — poora system yahin hai:
+    │   │   ├── input.ts (131)   ✓ WASD/arrows/E/Space + joystick; window listeners.
+    │   │   ├── movement.ts (61) ✓ AABB collision, substeps, wall-slide.
+    │   │   ├── camera.ts (23)   ✓ Follow + clamp.
+    │   │   ├── loop.ts (65)     ✓ Fixed 60Hz loop.
+    │   │   └── sprites.ts (62)  ✓ Image loaders.
+    │   │   ⚠ NOTE: yeh engine SIRF GameScreen ke through use hota hai.
+    │   │     hub/ aur world/ folders isko import tak nahi karte. YAHI GAP HAI.
+    │   │
+    │   ├── games/
+    │   │   ├── index.ts (55)        — Registry: 2 hi games — drain-puzzle (REAL),
+    │   │   │                          city-builder (demo:true placeholder).
+    │   │   ├── drain-puzzle-scene.ts (707) ✓ Naali Paheli: 20×14 grid, Aru sprite
+    │   │   │                          draw (L656–675), moveActor movement (L288–301),
+    │   │   │                          debugState() test seam. Fully verified.
+    │   │   ├── demo-scene.ts (314)  — Framework demo (city-builder placeholder).
+    │   │   └── types.ts (43)        — Scene/GameDef contracts.
+    │   │
+    │   ├── store.tsx (238)      — Progress state + localStorage (schema v3):
+    │   │                          completedBuildings, XP, node restore. (Neutral)
+    │   ├── nodes.ts (134)       — 5 map regions; sirf Sindhu Ghati explored.
+    │   ├── world-types.ts (90)  — Building/NPC contracts.
+    │   └── worlds/
+    │       ├── index.ts (146)         — World registry (sirf sindhu-ghati).
+    │       └── sindhu-ghati/
+    │           ├── buildings.json (97) — Building positions (% coords, CLICK ke liye
+    │           │                          authored — walkable grid ke liye NAHI).
+    │           └── npcs.json (141)     — NPC positions + dialogues (hover ke liye).
+    │
+    ├── hooks/, lib/             — use-mobile, use-toast, stage constants, cn().
+    └── assets/images/
+        ├── hub-reference.png (2.57 MB)  ⚠ Aru ISME baked hai (hub).
+        ├── village-sindhu.jpg (1.06 MB) ⚠ Village painting — isme Aru nahi hai,
+        │                                   aur iske liye collision map bhi nahi.
+        ├── aru-sprite-cut.png (348 KB)  ✓ Aru ka alag sprite — SIRF minigames
+        │                                   isko use karte hain.
+        └── ui/ (~10 slices)             — Nav/frame/tab art. (Visual only)
+</pre>
+
+<!-- ================= 6. WHY DESIGNED THIS WAY ================= -->
+<h2>6. Yeh Aisa Kyu Bana? (Context)</h2>
+<p>Yeh koi accident nahi tha — PRD ke phases ke hisaab se hub aur village <b>point-and-click exploration screens</b> ke roop mein design hue (painted art + hotspots), aur "asli gameplay" minigames ke andar canvas engine par gaya. Dono approaches apni jagah sahi hain; gap tab dikhta hai jab expectation ho ki Aru <b>village mein bhi RPG ki tarah ghoome</b>. Woh feature abhi tak kisi phase mein banaya hi nahi gaya — na iska sprite layer hai, na collision data, na input wiring us screen par.</p>
+
+<!-- ================= 7. ROADMAP ================= -->
+<h2>7. Kya Karna Hoga — Fix Roadmap</h2>
+
+<div class="rec">
+  <h4>Option A (Recommended): Village ko walkable canvas world banao</h4>
+  <p>Existing engine ko reuse karke <span class="file">NodeWorldScreen</span> ko canvas scene mein badla jaye:</p>
+  <ul>
+    <li><b>Background:</b> wahi <code>village-sindhu.jpg</code> painting canvas par draw hogi (art change nahi karna).</li>
+    <li><b>Aru sprite layer:</b> <code>aru-sprite-cut.png</code> painting ke upar, engine ke <code>moveActor</code> se WASD/arrows + joystick movement, camera follow (tall art 1024&times;1536 ke liye vertical camera — abhi jo manual scroll hai woh automatic ho jayega).</li>
+    <li><b>Collision mask:</b> painting ke upar ek walkable-grid author karna padega (gharon, paani, walls block) — yeh is option ka sabse bada naya kaam hai.</li>
+    <li><b>Building entry:</b> click ki jagah proximity — building ke paas jao, "E — Andar jao" prompt (Naali Paheli ke pick-prompt jaisa hi pattern).</li>
+    <li><b>NPC dialogue:</b> hover ki jagah paas jaane par bubble (proximity trigger) — mobile par bhi natural ho jayega.</li>
+    <li><b>Solvability guard:</b> wahi headless sim pattern (<code>debugState()</code> + verify script) — taaki har building tak pahunchna hamesha possible rahe.</li>
+  </ul>
+  <p><b>Effort:</b> Medium — engine ready hai; naya kaam = collision mask + triggers + camera tuning + testing. Ek focused task ka scope.</p>
+</div>
+
+<div class="box">
+  <h4 class="warn" style="margin:0 0 6px;">Option B: DOM-based movement (quick hack)</h4>
+  <p>Aru ko HTML <code>&lt;img&gt;</code> bana kar CSS transform se hilana. Jaldi ban jayega par collision, camera, performance aur mobile handling messy ho jaati hai — engine already hai to iska koi faayda nahi. <b>Not recommended.</b></p>
+</div>
+
+<div class="box">
+  <h4 style="margin:0 0 6px; color: var(--gold-soft);">Choti additions (kisi bhi option ke saath)</h4>
+  <ul>
+    <li><b>Run/Sprint:</b> Shift hold = speed &times;1.6 — <span class="file">input.ts</span> mein ek modifier + scenes mein speed param. Chhota kaam, minigames + village dono mein milega. Mobile ke liye joystick ke edge par sprint.</li>
+    <li><b>Hub (Memory Map):</b> walkable banana low-value hai — yeh conceptual map hai, click-based hi theek hai. Zyada se zyada Aru ka animated marker add ho sakta hai jo selected region par khada ho.</li>
+    <li><b>True isometric:</b> recommend NAHI — poori art + engine rework maangta hai (diamond tiles, depth sorting). Aapki painted art already premium lagti hai.</li>
+  </ul>
+</div>
+
+<!-- ================= 8. MISCONCEPTIONS ================= -->
+<h2>8. Common Confusions — Clear Karte Hain</h2>
+<table>
+  <tr><th>Assumption</th><th>Reality</th></tr>
+  <tr><td>"Movement ka code toota hua hai / bug hai"</td><td class="ok">Nahi — engine sahi hai. Naali Paheli mein movement automated e2e testing + deterministic simulation dono se proven hai. Gap sirf yeh hai ki village/hub screens engine use hi nahi karte.</td></tr>
+  <tr><td>"Keyboard focus / click issue hoga"</td><td class="ok">Nahi — key listeners window-level hain, canvas focus ki zaroorat nahi. Minigame mein sirf "▶ Shuru Karo" dabana zaroori hai (intro ke dauraan input jaan-boojh kar OFF hai).</td></tr>
+  <tr><td>"Game isometric engine par bana hai"</td><td class="ok">Nahi — engine top-down orthogonal (square grid) hai; isometric feel sirf painted art ka hai.</td></tr>
+  <tr><td>"Run kaam nahi kar raha"</td><td class="ok">Run feature exist hi nahi karta — implement karna hoga (chhota kaam).</td></tr>
+  <tr><td>"Village mein Aru dikh raha hai par hil nahi raha"</td><td class="ok">Village mein jo Aru "dikhta" hai woh sirf hub art mein baked figure hai; village painting mein to Aru render bhi nahi hota. Hilne ke liye pehle uska sprite layer banana padega.</td></tr>
+</table>
+
+<!-- ================= 9. VERDICT ================= -->
+<h2>9. Final Verdict</h2>
+<div class="tldr">
+  <p style="margin:0;"><b>Kya gap hai?</b> Ek hi sentence mein: <b>movement engine aur exploration screens ke beech ka pul (bridge) kabhi banaya nahi gaya.</b> Engine (input + collision + camera + loop) production-quality hai aur Naali Paheli mein proven hai. Village/Hub screens static art + click hotspots par bane hain — unme player entity, collision data, aur input wiring teeno missing hain (GAP #1–#3). Run feature kahin nahi hai (GAP #4), aur isometric sirf art ka illusion hai (GAP #5). <br><br><b>Recommended fix:</b> Option A — village ko existing engine par walkable world banana (collision mask + proximity triggers), saath mein Shift-sprint. Isse game "menu jaisa" nahi, "RPG jaisa" feel karega — bina art dobara banaye.</p>
+</div>
+
+<footer>
+  Report generated after full-project static analysis (har folder/file), engine deep-dive (input/movement/camera/loop), screen-by-screen Aru render audit, aur runtime verification (e2e tests + headless simulation). &middot; BharatVerse &middot; 30 Aug 2026
+</footer>
+
+</div>
+</body>
+</html>
